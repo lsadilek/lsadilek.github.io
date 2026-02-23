@@ -1,0 +1,236 @@
+/* Reset výchozích stylů prohlížeče */
+*, /* Pro všechny elementy */
+*:after, /* Včetně pseudo-elementů jako je padding a border */
+*:before {
+  box-sizing: border-box; /* Standardní metoda výpočtu velikosti elementů */
+  /* Starší prefixy pro podporu v Mozille a Webkitu */
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+}
+
+/* Nastavení stylu hlavního nadpisu */
+h1 {
+    font-size: 1.5em; /* Velikost písma */
+    font-weight: normal; /* Normální tučné písmo */
+    color: white; /* Bílá barva textu */
+    text-align: center; /* Zarovnání na střed */
+    text-shadow: 2px 2px 1px #0a294b; /* Stín kolem textu */
+    margin: 10px 15px 7px 20px; /* Vnější odsazení */
+}
+
+/* Nastavení stylu nadpisu h2 */
+h2 {
+    font-size: 1.7em; /* Nastavení velikosti písma */
+}
+
+h2, h3, h4, h5, h6 {
+    text-align: left; /* Zarovnání textu vlevo */
+    color: #0a294b; /* Tmavě modrá barva textu */
+    font-family: sans-serif; /* Použití písma Arial */
+    text-shadow: 3px 3px 7px #666666; /* Přidání stínu k textu */
+}
+
+/* Styl pro obrázky z galerie a rámeček kolem obrázku */
+.okraj {
+    float: left;
+    margin: 10px 5px 0px 5px;
+    border: 2px solid #2c5f0a; /* Zelený rámeček */
+    border-radius: 10px; /* Zaoblené rohy */
+    box-shadow: 2px 2px 7px #1c2228; /* Stín */
+    width: 47%;
+    height: auto;
+}
+
+/* Styl pro ikony programů (stejné jako .okraj, ale liší se v @media) */
+.ikona_program {
+    float: left;
+    margin: 0px 10px 10px 0px;
+    border: 2px solid #2c5f0a; /* Zelený rámeček */
+    border-radius: 10px; /* Zaoblené rohy */
+    box-shadow: 2px 2px 7px #1c2228; /* Stín */
+}
+
+/* Vycentrování jednoho obrázku doprostřed */
+.centrobr {
+    margin: 0px 10px 10px 0px;
+    border: 2px solid #2c5f0a; /* Zelený rámeček */
+    border-radius: 10px; /* Zaoblené rohy */
+    box-shadow: 2px 2px 7px #1c2228; /* Stín */
+    margin: 0px auto; /* Automatické centrování */
+}
+
+/* Zarovnání textu na střed, třeba pod ikonou */
+.centr {
+    text-align: center;
+}
+
+/* Středový obsah stránky, aby article header a article section uprostřed */
+.centrovac {
+    display: flex;
+    justify-content: center;
+    margin: 0px auto; /* Automatické centrování */
+}
+
+/* Aby body > header uprostřed */
+.centrovac_header {
+    display: flex;
+    justify-content: center;
+    margin: 0px auto; /* Automatické centrování */
+}
+
+/* Vyčištění floatů (zajistí správné rozložení prvků) */
+.cistic {
+    clear: both;
+}
+
+/* Stylování celého těla stránky */
+body {
+    font-family: sans-serif; /* Nastavení základního písma */
+    background: url('obrazky/pozadi2.png') #1c2228; /* Obrázek jako pozadí */
+    margin: 0px; /* Zrušení standardního okraje */
+    font-size: 1em;  /* Nastavení písma */
+    padding: 24px 0px 0px 0px; /* Horní odsazení (pod hlavičkou) */
+    width: 100%; /* Minimální šířka stránky */
+}
+
+/* Stylování hlavičky */
+body > header {  /* ">"" = header musí být přímo za body bez dalšího kódu */
+    display: flex; /* Nastaví header jako flex, potomci jsou pak flex položky */
+    justify-content: center; /* Zarovná položky flex horizontálně na střed */
+    width: 100%;  /* Hlavička přes celou šířku, výška dle prvků uvnitř */
+    background: url('obrazky/pozadi2.png') #1c2228; /* Pozadí hlavičky */
+    position: fixed; /* Fixace pozice (zůstane nahoře při rolování) */
+    z-index: 1; /* Hlavička bude nad ostatním obsahem */
+    top: 0; /* Fixování k hornímu okraji */
+}
+
+/* Styl pro jednotlivé položky navigace */
+li {
+    list-style-type: none; /* Zrušení odrážek */
+}
+
+/* Styl pro odkazy <a>...</a> v odrážkách li */
+li a {
+    text-decoration: none; /* Bez podtržení */
+    float: left; /* tlačítka vedle sebe */
+    padding: 1px 1px; /* Odsazení uvnitř tlačítka */
+    margin: 0 1px; /* Mezera mezi tlačítky */
+    height: 40px;  /* Výška tlačítka */
+    border: 1px solid #006797; /* Modrý rámeček */
+    margin: 1px 1px 1px 1px; /* Vnější odsazení */
+}
+
+/* Styl při najetí na odkaz v odrážkách (hover efekt) */
+li a:hover {
+    background: #aacc00; /* dříve #324b32; Tmavě zelené pozadí */
+    box-shadow: 0px 0px 5px black; /* Přidání stínu */
+}
+
+/* Styl článku */
+article {
+    background: url('obrazky/pozadi.png') #009aca; /* Modré pozadí */
+    padding: 30px 0px; /* Odsazení uvnitř článku */
+}
+
+/* Stylování ikon pro články */
+article header {
+    width: 250px; /* Šířka */
+    float: left; /* Obtékání */
+    height: 200px; /* Výška */
+}
+
+/* Styl pro sekci uvnitř článku */
+article section {
+    width: 760px; /* Šířka sekce */
+    float: left; /* Umístění vlevo */
+    background: white; /* Bílé pozadí */
+    border: 2px solid #006797; /* Modrý rámeček */
+    border-radius: 10px; /* Zaoblené rohy */
+    padding: 20px; /* Vnitřní odsazení */
+    box-shadow: 2px 2px 7px #1c2228; /* Stín */
+    text-align: justify; /* Zarovnání textu do bloku (vlevo i vpravo) */
+}
+
+/* Stylování patičky */
+footer {
+    height: 40px;
+    color: white;
+    margin: 20px 0 0 30px;
+}
+
+/* Mřížka pro prvky v sekci O nás a Kontakty*/
+.container {
+  display: grid;
+  grid-template-columns: 110px auto; /* 2 sloupce o šířkách px */
+/* grid-template-columns:repeat(4, 1fr); /* 4 sloupce 1díl dostupného prostoru*/
+  grid-template-rows: repeat(4, auto);  /* 4 řádky */
+  gap: 10px;
+}
+
+/* Prvky v mřížce O nás a Kontakty */
+.item {
+  background-color: #f0f0f0; /* původně #f0f0f0; */
+  padding: 10px;
+  text-align: left;
+}
+
+/* pole pro scrolování dlouhých článků v sekci Reference*/
+.scroll-container {
+            height: 750px; /* Nastavení výšky */
+            overflow: auto; /* Povolení posuvníku */
+        }
+
+/* Pseudoprvek posuvník proto ::, který se objeví, až je třeba */
+::-webkit-scrollbar {
+    width: 20px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #324b32;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #aacc00;
+}
+
+/* Nastavení plynulého rolování a správného odsazení při skocích na sekce */
+html {
+    scroll-padding-top: 50px; /* Scroll pod hlavičkou */
+    scroll-behavior: smooth; /* Plynulé rolování */
+    font-size: 16px; /* Základní hodnota písma, ze které se pak odvozují em */
+
+/****************************************************************************/
+/* pro menší šířku než 1060px                                               */
+/****************************************************************************/
+@media (max-width: 1060px){
+
+  body {
+      font-size: 0.8em; /* Zvětšení písma na mobilu */
+      font-family: sans-serif;
+      min-width: 240px;
+      width: 100%;
+  }
+  
+  .centrovac {
+      display: block; /* Původní hodnota */
+      justify-content: initial; /* Původní hodnota */
+      max-width: 100%;
+  }  
+
+  article header {
+      width: none;
+      height: none;
+      float: none;
+      margin: 0px auto; /* Automatické centrování na střed, když je ikona nad */
+  }
+  
+  article section {
+      width: 100%;
+  }
+     
+  .okraj {
+    width: 44%;
+    height: auto;
+  }
+}

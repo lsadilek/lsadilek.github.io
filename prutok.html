@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width">
+
+    <link rel="shortcut icon" href="obrazky/favikon.ico">
+    <title>Projektování vodovodů a kanalizací</title>
+    <link rel="stylesheet" href="sadilek.css" type="text/css" />
+
+    <style>
+        /* drobná pomocná třída */
+        #vysledek {
+          white-space: pre-wrap;
+          font-family: monospace;
+        }
+        .hidden { display: none; }
+    </style>
+
+    <script src="https://www.gstatic.com/charts/loader.js"></script>
+</head>
+
+<body>
+
+<header class="header">
+    <div class="centrovac_header">
+        <a href="index.html#pomucky">
+            <img src="obrazky/domu_lista.png" alt="Domů" title="Domů"/>
+        </a>
+    </div>
+</header>
+
+<article id="prutok">
+<div class="centrovac">
+
+<header>
+    <p class="centr">
+        <img src="obrazky/javascript-64.png" alt="javascript"/>
+    </p>
+    <h1>Průtoky a rychlosti v kruhovém profilu s volnou hladinou</h1>
+</header>
+
+<section style="text-align:left;">
+
+<!-- ==========================
+     FORMULÁŘ
+=========================== -->
+
+<form id="formular">
+    Název akce a popis:
+    <input id="nazev" style="width:100%"><br><br>
+
+    Průměr potrubí DN [mm]:
+    <input id="dn" style="width:100%"><br><br>
+
+    Kinematická viskozita ν [m²/s]:
+    <input id="vis" value="1.3101e-06" style="width:100%"><br><br>
+
+    Hydraulická drsnost potrubí k [mm]:
+    <input id="k" style="width:100%"><br><br>
+
+    Hydraulický sklon J [‰]:
+    <input id="j" style="width:100%"><br><br>
+
+    Návrhový výpočtový průtok Q [l/s]:
+    <input id="q" style="width:100%"><br><br>
+
+    <button type="submit">vypočítej</button>
+</form>
+
+<!-- ==========================
+     VÝSLEDKY + GRAF
+=========================== -->
+<script>
+document.getElementById("formular").addEventListener("submit", function(e){
+    e.preventDefault();
+    vypocet();
+});
+
+function colebrook(Dh, J, k, nu, g) {
+    const argSqrt = 2*g*Dh*J;
+    if (argSqrt <= 0) return null;
+    const sqrtTerm = Math.sqrt(argSqrt);
+    const argLog = k/(3.71*Dh) + 2.51*nu/(Dh*sqrtTerm);
+    if (argLog <= 0 || !isFinite(argLog)) return null;
+    return -2 * sqrtTerm * Math.log10(argLog);
+}
+
+function vypocet() {
+    let chyba = false; //pokud průřez nevyhoví přepnu dále v kódu na true a tím se vrátím k formuláři
+    const Nazev = document.getElementById("nazev").value;
+    const D = parseFloat(document.getElementById("dn").value)/1000;
+    const nu = parseFloat(document.getElementById("vis").value);
+    const k = parseFloat(document.getElementById("k").value)/1000;
+    const J = parseFloat(document.getElementById("j").value)/1000;
+    const Qvyp = parseFloat(document.getElementById("q").value)/1000;
+
+    if (!(D>0 && nu>0 && k>0 && J>0 && Qvyp>0)) {
+        alert("Zkontrolujte vstupy. Zřejmě jste někde nezadali číslo nebo zadali číslo <=0 nebo číslo s desetinnou čárkou místo tečkou");
+        chyba = true;
+        return;
+    }
+
+    let r = D/2;
+    let g = 9.81;
+    let h = 0, hp = 0;
+    let Rh=0, Rhp=0;
+    let S=0, O=0, Sp=0, Op=0;
+    let vvyp=0, vp=0;
+    let Q=0, Qp=0;
+    let tauu=0, tauup=0;
+    let Rey=0;
+
+    // hledání h
+    while (h < D) {
+    h += 0.00001;
+
+    let fi;
+    if (h <= r) {
+        fi = 2 * Math.acos((r - h) / r);
+    } else if (h <= D) {
+        fi = 2 * Math.PI - 2 * Math.acos((h - r) / r);
+    } 
+      else {
+         alert("Průřez kapacitně nevyhoví!");
+         chyba = true;
+         break;
+      }
+                           
+
+    S = (r * r) / 2 * (fi - Math.sin(fi));
+    O = fi * r;
+    Rh = S / O;
+
+    Dh = 4 * Rh;
+
+    // funkce pro výpočet rychlosti (Colebrook)
+    vvyp = colebrook(Dh, J, k, nu, g);
+    if (vvyp === null) continue;
+
+    Q = vvyp * S;
+    tauu = 1003 * 9.81 * Rh * J;
+    
+    // Ukončí smyčku, jakmile se průtok bude rovnat průtoku výpočtovému, tím máme výšku h
+    if (Q >= Qvyp) {
+        break;
+    }
+    }   
+ 
+    if (chyba) return;
+
+    // kapacitní
+    let vkap = colebrook(D, J, k, nu, g);
+    if (vkap === null) { alert("Chyba Colebrooka."); return; }
+            
+    Rey = vvyp*D/nu;
+          
+    let A = Math.PI*D*D/4;
+    let Qkap = vkap*A;
+
+    // provzdušnění – vždy
+    let y = 2.5*Math.sqrt(0.014)-0.13-0.75*Math.sqrt(Rh)*(Math.sqrt(0.014)-0.1);
+    let C = (1/0.014)*Math.pow(Rh, y);
+    let Roa = 1/(1+0.0559*C*J);
+    Qp = Qvyp/Roa;
+
+    // hledání hp 
+    while (hp < D) {
+   
+    hp += 0.00001;
+
+    let fip;
+    if (hp <= r) {
+        fip = 2 * Math.acos((r - hp) / r);
+    } else if (hp <= D) {
+        fip = 2 * Math.PI - 2 * Math.acos((hp - r) / r);
+    } 
+      else {
+         alert("Průřez kapacitně nevyhoví v důsledku zvětšení objemu provzdušněným proudem!");
+         chyba = true;
+         break;
+      }
+
+    Sp = (r * r) / 2 * (fip - Math.sin(fip));
+    Op = fip * r;
+    Rhp = Sp / Op;
+
+    Dhp = 4 * Rhp;
+
+    // funkce pro výpočet rychlosti (Colebrook)
+    vp = colebrook(Dhp, J, k, nu, g);
+    if (vp === null) continue;
+
+    Q = vp * Sp;
+    tauup = 1003 * 9.81 * Rhp * J;
+    
+    // Ukončí smyčku, jakmile se průtok bude rovnat průtoku provzdušněnému, tím máme výšku hp
+    if (Q >= Qp) {
+        break;
+    }
+    }
+    if (chyba) return;
+    
+    // grafová data
+    let Qgf=[], Qpgf=[], vgf=[];
+    
+    //aby graf začínal od 0
+    vgf.push(0);
+    Qgf.push(0);
+    Qpgf.push(0);
+
+    let v=0;
+    while (v < D) {
+        v = Math.round((v + D*0.05)*1e6)/1e6;
+        let fig = (v<=r) ? 2*Math.acos((r-v)/r) : 2*Math.PI - 2*Math.acos((v-r)/r);
+        let Sg = r*r/2*(fig - Math.sin(fig));
+        let Og = fig*r;
+        let Rhg = Sg/Og;
+        let Dhg = 4*Rhg;
+        let vg = colebrook(Dhg, J, k, nu, g);
+        if (vg === null) continue;
+        let Qg = vg*Sg;
+        let yg = 2.5*Math.sqrt(0.014)-0.13-0.75*Math.sqrt(Rhg)*(Math.sqrt(0.014)-0.1);
+        let Cg = (1/0.014)*Math.pow(Rhg, yg);
+        let Roag = 1/(1+0.0559*Cg*J);
+        let Qpg = Qg/Roag;
+        Qgf.push(Qg*1000);
+        Qpgf.push(Qpg*1000);
+        vgf.push(v*1000);
+    }
+
+    
+    // skryj formulář
+    document.getElementById("formular").classList.add("hidden");
+
+    // výstup
+    let out = `
+<h2>${Nazev}</h2>
+------------------------------------------------------------
+VSTUPNÍ HODNOTY
+------------------------------------------------------------
+Průtok              Qvýp = ${(Qvyp*1000).toFixed(2)} l/s
+Vnitřní průměr         D = ${(D*1000).toFixed(1)} mm
+Hydraulický sklon      J = ${(J*1000).toFixed(3)} ‰
+Hydraulická drsnost    k = ${(k*1000).toFixed(3)} mm
+Kinematická viskozita  ν = ${nu} m²/s
+Tíhové zrychlení       g = 9.81 m/s²
+Stupeň drsnosti        n = 0.014 s·³√m
+Hustota odpadní vody   ρ = 1003 kg/m³
+
+------------------------------------------------------------
+VZORCE
+------------------------------------------------------------
+S = r²/2 · (φ − sin φ)
+O = r · φ
+Rh = S / O
+Q = v · S
+Dh = 4 · Rh (pro částečně plněné potrubí)
+v = -2·√(2·g·Dh·J)·log₁₀(k/(3.71·Dh) + 2.51·ν/(Dh·√(2·g·Dh·J)))
+τu = ρ·g·Rh·I; I=J
+
+PROVZDUŠNĚNÍ:
+y = 2.5·√n − 0.13 − 0.75·√Rh·(√n − 0.1)
+C = (1/n)·Rhʸ
+ρa = 1 / (1 + 0.0559·C·J)
+Qp = Q / ρa
+
+------------------------------------------------------------
+NEPROVZDUŠNĚNÝ PROUD
+------------------------------------------------------------
+Středový úhel            φ = ${(h<=r?2*Math.acos((r-h)/r):2*Math.PI-2*Math.acos((h-r)/r)).toFixed(6)} rad
+Poloměr potrubí          r = ${(r*1000).toFixed(1)} mm
+Průtočná plocha          S = ${(S*1e6).toFixed(2)} mm²
+Omočený obvod            O = ${(O*1000).toFixed(2)} mm
+Hydraulický poloměr     Rh = ${(Rh*1000).toFixed(3)} mm
+Rychlost              vvýp = ${vvyp.toFixed(3)} m/s
+Tečné napětí            τu = ${tauu.toFixed(3)} Pa
+Výška hladiny            h = ${(h*1000).toFixed(1)} mm
+
+Pokud je tečné napětí menší jak 4 Pa, musí se zvětšit sklon 
+nebo navrhnout umělé proplachování.
+
+Pokud je rychlost větší jak 5 m/s, musí se zmenšit sklon, 
+navrhnout spadiště, provést výstelku z čediče apod. 
+
+Reynoldsovo číslo = ${(Rey).toFixed(0)} (Musí být větší jak 4000, 
+jinak by se nejednalo o turbulentní proudění.)     
+
+------------------------------------------------------------
+PROVZDUŠNĚNÝ PROUD (pokud je J < 35 ‰, nemusí se počítat)
+------------------------------------------------------------
+Středový úhel           φp = ${(hp<=r?2*Math.acos((r-hp)/r):2*Math.PI-2*Math.acos((hp-r)/r)).toFixed(6)} rad
+Průtočná plocha         Sp = ${(Sp*1e6).toFixed(2)} mm²
+Omočený obvod           Op = ${(Op*1000).toFixed(2)} mm
+Hydraulický poloměr    Rhp = ${(Rhp*1000).toFixed(3)} mm
+Rychlost provzd.        vp = ${vp.toFixed(3)} m/s
+Průtok provzdušněný     Qp = ${(Qp*1000).toFixed(2)} l/s
+Výška hladiny           hp = ${(hp*1000).toFixed(1)} mm
+Součinitel               y = ${y}
+Rychlostní součinitel    C = ${C} √m/s
+Poměr Q/Qp              ρa = ${Roa}
+
+------------------------------------------------------------
+KAPACITNÍ PRŮTOK A RYCHLOST
+------------------------------------------------------------
+Kapacitní průtok      Qkap = ${(Qkap*1000).toFixed(2)} l/s
+Kapacitní rychlost    vkap = ${vkap.toFixed(3)} m/s
+
+------------------------------------------------------------
+GRAF Q(h) JE NÍŽE
+------------------------------------------------------------
+`;
+
+out += `
+<br>
+<button id="novyVypocet">Provést další výpočet</button>
+`;
+
+
+    document.getElementById("vysledek").innerHTML = out;
+ 
+    document.getElementById("vysledek").classList.remove("hidden");
+    
+    document.getElementById("novyVypocet").addEventListener("click", function() {
+       // schovej výsledky
+        document.getElementById("vysledek").classList.add("hidden");
+
+        // smaž graf
+        document.getElementById("chart").innerHTML = "";
+
+        // ukaž formulář
+        document.getElementById("formular").classList.remove("hidden");
+    });
+    
+    google.charts.load("current", {packages:["corechart"]});
+    google.charts.setOnLoadCallback(function(){
+        let data = new google.visualization.DataTable();
+        data.addColumn("number","h");
+        data.addColumn("number","neprovzdušněný");
+        data.addColumn("number","provzdušněný");
+
+        for (let i = 0; i < vgf.length; i++){
+            data.addRow([vgf[i], Qgf[i], Qpgf[i]]);
+        }
+
+        let chart = new google.visualization.LineChart(document.getElementById("chart"));
+
+        chart.draw(data, {
+            title: "Graf Q(h)",
+            hAxis: { title: "výška h [mm]" },
+            vAxis: { title: "průtok Q [l/s]" },
+            pointSize: 5,
+
+            // legenda uvnitř grafu vlevo nahoře
+            legend: {
+                position: "in",
+                alignment: "start"
+            }
+        });
+    });
+
+    
+}
+</script>
+
+<div id="vysledek" class="hidden"></div>
+<div id="chart" style="width:700px;height:350px;margin-top:20px;"></div>
+
+</section>
+
+<div class="cistic"></div>
+</div>
+</article>
+
+<footer class="centr">
+    Vytvořil &copy;Ing. Luděk Sadílek 2013-2026
+    <img src="obrazky/flatcz.png" alt="Vlajka"/>
+</footer>
+
+
+</body>
+</html>
