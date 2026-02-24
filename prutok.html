@@ -329,32 +329,42 @@ out += `
         document.getElementById("formular").classList.remove("hidden");
     });
     
-    google.charts.load("current", {packages:["corechart"]});
-    google.charts.setOnLoadCallback(function(){
-        let data = new google.visualization.DataTable();
-        data.addColumn("number","h");
-        data.addColumn("number","neprovzdušněný");
-        data.addColumn("number","provzdušněný");
+        google.charts.load("current", {packages:["corechart"]});
+        google.charts.setOnLoadCallback(drawChart);
 
-        for (let i = 0; i < vgf.length; i++){
-            data.addRow([vgf[i], Qgf[i], Qpgf[i]]);
+        let chart, data, options;
+
+        function drawChart() {
+            data = new google.visualization.DataTable();
+            data.addColumn("number","h");
+            data.addColumn("number","neprovzdušněný");
+            data.addColumn("number","provzdušněný");
+
+            for (let i = 0; i < vgf.length; i++){
+                data.addRow([vgf[i], Qgf[i], Qpgf[i]]);
+            }
+
+            options = {
+                title: "Graf Q(h)",
+                hAxis: { title: "výška h [mm]" },
+                vAxis: { title: "průtok Q [l/s]" },
+                pointSize: 5,
+                legend: { position: "in", alignment: "start" }
+            };
+
+            chart = new google.visualization.LineChart(document.getElementById("chart"));
+            chart.draw(data, options);
         }
 
-        let chart = new google.visualization.LineChart(document.getElementById("chart"));
-
-        chart.draw(data, {
-            title: "Graf Q(h)",
-            hAxis: { title: "výška h [mm]" },
-            vAxis: { title: "průtok Q [l/s]" },
-            pointSize: 5,
-
-            // legenda uvnitř grafu vlevo nahoře
-            legend: {
-                position: "in",
-                alignment: "start"
-            }
+        // Minimalistické překreslení po dokončení resize
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+                chart.draw(data, options);
+            }, 150);
         });
-    });
+
 }
 </script>
 
