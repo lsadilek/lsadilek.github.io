@@ -1,9 +1,10 @@
 kaboom({
     width: 800,
     height: 600,
-    letterbox: true,   // Udrží poměr stran 4:3 a zobrazí černé pruhy tam, kde není hra
+    letterbox: true,      // Zmenší hru tak, aby byla vidět celá
     background: [0, 0, 0],
     scale: 1,
+    touchToMouse: true,   // Vrátíme pro lepší kompatibilitu
     global: true,
 });
 
@@ -256,8 +257,11 @@ scene("game", () => {
         const delta = pos.sub(start);
 
         if (delta.len() > 2) {
-            const stredHry = width() / 2; // Polovina z 800px
-            if (start.x < stredHry) {
+            // Použijeme raději window.innerWidth, je to na mobilech jistější pro dělení stran
+            const stredObrazovky = window.innerWidth / 2;
+            
+            // t.pos.x je skutečná pozice prstu na skle mobilu
+            if (t.pos.x < stredObrazovky) {
                 touchMoveDir.p1 = delta.unit();
             } else {
                 touchMoveDir.p2 = delta.unit();
@@ -269,8 +273,8 @@ scene("game", () => {
     onTouchEnd((pos, t) => {
         const start = startTouches[t.id];
         if (start) {
-            const stredHry = width() / 2; // Sjednoceno na width()
-            if (start.x < stredHry) {
+            const stredObrazovky = window.innerWidth / 2;
+            if (t.pos.x < stredObrazovky) {
                 touchMoveDir.p1 = vec2(0,0);
             } else {
                 touchMoveDir.p2 = vec2(0,0);
