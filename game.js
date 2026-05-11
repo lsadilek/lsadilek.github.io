@@ -344,25 +344,24 @@ scene("game", () => {
     }
 
     const player1 = add([
-        sprite("player1"), 
-        pos(415, 300), 
-        area({ collision: false }), 
-        anchor("center"), 
+        sprite("player1"),
+        pos(width() / 2 + 15, height() / 2),
+        area({ collision: false }),
+        anchor("center"),
         z(5),
         { speed: 180, score: 0 },
         {
             draw() {
                 drawEllipse({
-                    pos: vec2(0, 30), 
+                    pos: vec2(0, 30),
                     radiusX: 14,
                     radiusY: 6,
                     color: Color.fromHex("#000000"),
                     opacity: 0.3,
-                })
+                });
             }
         }
     ]);
-
 
     // PLAYER 2 – dynamický střed obrazovky
     const player2 = add([
