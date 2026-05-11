@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport"
-          content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+          content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
     <title>Kdo nasbírá víc hub – JS verze</title>
 
@@ -14,11 +14,15 @@
             width: 100%;
             height: 100%;
             overflow: hidden;
+            position: fixed;       /* zabrání posunu celé stránky */
+            top: 0;
+            left: 0;
             background: #121212;
             display: flex;
             justify-content: center;
             align-items: center;
-            touch-action: none;
+            touch-action: none;    /* vypne gesta jako pinch‑zoom a scroll */
+            overscroll-behavior: none; /* zabrání „natažení“ stránky při scrollu */
         }
 
         /* Canvas má pevné rozměry, ale škáluje se jen šířkou */
@@ -36,15 +40,16 @@
 </head>
 
 <body>
-
-    <!-- Pevné interní rozměry -->
     <canvas id="game" width="800" height="600"></canvas>
 
+    <!-- Kaboom -->
     <script src="https://unpkg.com/kaboom@3000.0.0/dist/kaboom.js"></script>
-    <script src="game.js"></script>
 
+    <!-- Tvoje hra -->
+    <script src="game.js"></script>
 </body>
 </html>
+
 
 
 
