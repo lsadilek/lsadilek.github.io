@@ -240,6 +240,37 @@ scene("start", () => {
 // Scéna hry
 // ---------------------------------------------------------
 scene("game", () => {
+    let startTouches = {};
+    let touchMoveDir = { p1: vec2(0,0), p2: vec2(0,0) };
+
+    // Snímání dotyků
+    onTouchStart((pos, t) => { startTouches[t.id] = pos; });
+
+    onTouchMove((pos, t) => {
+        const start = startTouches[t.id];
+        if (!start) return;
+        const delta = pos.sub(start);
+
+        if (delta.len() > 5) {
+            // Ukládáme jen čistý směr (.unit()), ne celou vzdálenost prstu
+            if (start.x < width() / 2) touchMoveDir.p1 = delta.unit();
+            else touchMoveDir.p2 = delta.unit();
+        }
+                startTouches[t.id] = pos; // Plynulý update startovní pozice
+    });
+
+
+
+
+    onTouchEnd((pos, t) => {
+        const start = startTouches[t.id];
+        if (start) {
+            if (start.x < width() / 2) touchMoveDir.p1 = vec2(0,0);
+            else touchMoveDir.p2 = vec2(0,0);
+            delete startTouches[t.id];
+        }
+    });
+
     // Pozadí s náhodnou trávou
     for (let y = 0; y < 19; y++) {
         for (let x = 0; x < 25; x++) {
@@ -444,30 +475,32 @@ scene("game", () => {
     const timeText = add([text("čas: 3:00", { size: 18, font: "sans-serif" }), pos(680, 20), z(1000)]);
     let gameTime = 180;
 
-    function handlePlayer(p, keys) {
+    function handlePlayer(p, keys, tDir = vec2(0,0)) { // tDir je směr z dotyku
         let moveDir = vec2(0, 0);
 
-        // Zjištění směru ze všech stisknutých kláves
+
+        // KLÁVESNICE (zůstává beze změny)
         if (isKeyDown(keys.left))  moveDir.x -= 1;
         if (isKeyDown(keys.right)) moveDir.x += 1;
         if (isKeyDown(keys.up))    moveDir.y -= 1;
         if (isKeyDown(keys.down))  moveDir.y += 1;
 
+        // DOTYK (použije se, jen když se nemačkají klávesy)
+        if (moveDir.x === 0 && moveDir.y === 0 && tDir.len() !== 0) {
+            moveDir = tDir;
+        }
+
         if (moveDir.x !== 0 || moveDir.y !== 0) {
-            // Pohyb (unit() zajistí, že šikmo nepůjdou rychleji)
             p.move(moveDir.unit().scale(p.speed));
 
-            // Určení animace podle převládajícího směru
             let anim = "";
             if (Math.abs(moveDir.x) >= Math.abs(moveDir.y)) {
                 anim = moveDir.x > 0 ? "walk_right" : "walk_left";
             } else {
                 anim = moveDir.y > 0 ? "walk_down" : "walk_up";
             }
-
             if (p.curAnim() !== anim) p.play(anim);
         } else {
-            // Zastavení v klidové pozici (stejné jako předtím)
             if (p.curAnim()) {
                 const last = p.curAnim();
                 p.stop();
@@ -480,8 +513,10 @@ scene("game", () => {
     }
 
     onUpdate(() => {
-        handlePlayer(player1, { left: "left", right: "right", up: "up", down: "down" });
-        handlePlayer(player2, { left: "a", right: "d", up: "w", down: "s" });
+        // Tady přidáme touchMoveDir.p1 a p2 jako třetí parametr
+        handlePlayer(player1, { left: "left", right: "right", up: "up", down: "down" }, touchMoveDir.p1);
+        handlePlayer(player2, { left: "a", right: "d", up: "w", down: "s" }, touchMoveDir.p2);        
+        
         
         // Dynamické nastavení z-indexu podle pozice Y
         player1.z = player1.pos.y;
@@ -723,6 +758,19 @@ scene("ceremony", ({ s1, s2 }) => {
     ]);
 
     btn.onClick(() => go("game"));
+    
+    // DOPLNĚK: Reakce na dotyk pro mobil
+    onTouchStart((pos) => {
+        if (btn.hasPoint(pos)) {
+            go("game");
+        }
+    });
+
+    function spawnRandomFirework() {
+        fireworkExplosion(rand(100, 700), rand(100, 250));
+        play("firework", { volume: 0.2 });
+        wait(rand(0.2, 1), spawnRandomFirework);
+    }    
 
     function spawnRandomFirework() {
         fireworkExplosion(rand(100, 700), rand(100, 250));
