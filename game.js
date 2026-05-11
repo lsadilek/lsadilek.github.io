@@ -244,14 +244,13 @@ scene("start", () => {
 
 scene("game", () => {
 
-    // --- DOTYKOVÉ OVLÁDÁNÍ S PŘEPOČTEM NA 800×600 ---
+    // --- DOTYKOVÉ OVLÁDÁNÍ S UZAMČENÍM STRANY ---
     let touches = {};
 
     function toCanvasPos(screenPos) {
         const rect = document.getElementById("game").getBoundingClientRect();
         const scaleX = 800 / rect.width;
         const scaleY = 600 / rect.height;
-
         return vec2(
             (screenPos.x - rect.left) * scaleX,
             (screenPos.y - rect.top) * scaleY
@@ -262,6 +261,7 @@ scene("game", () => {
         const p = toCanvasPos(pos);
         const mid = 800 / 2;
 
+        // přiřadíme hráče podle strany, kde dotyk začal
         touches[t.id] = {
             player: p.x < mid ? "p1" : "p2",
             start: p.clone()
@@ -275,12 +275,18 @@ scene("game", () => {
         const p = toCanvasPos(pos);
         const delta = p.sub(info.start);
 
+        // pokud prst přejede na druhou půlku, ignorujeme pohyb
+        const mid = 800 / 2;
+        if ((info.player === "p1" && p.x >= mid) || (info.player === "p2" && p.x < mid)) {
+            // prst je mimo svou půlku → hráč se zastaví
+            if (info.player === "p1") touchMoveDir.p1 = vec2(0, 0);
+            else touchMoveDir.p2 = vec2(0, 0);
+            return;
+        }
+
         if (delta.len() > 4) {
-            if (info.player === "p1") {
-                touchMoveDir.p1 = delta.unit();
-            } else {
-                touchMoveDir.p2 = delta.unit();
-            }
+            if (info.player === "p1") touchMoveDir.p1 = delta.unit();
+            else touchMoveDir.p2 = delta.unit();
         }
 
         info.start = p.clone();
@@ -290,11 +296,8 @@ scene("game", () => {
         const info = touches[t.id];
         if (!info) return;
 
-        if (info.player === "p1") {
-            touchMoveDir.p1 = vec2(0, 0);
-        } else {
-            touchMoveDir.p2 = vec2(0, 0);
-        }
+        if (info.player === "p1") touchMoveDir.p1 = vec2(0, 0);
+        else touchMoveDir.p2 = vec2(0, 0);
 
         delete touches[t.id];
     });
