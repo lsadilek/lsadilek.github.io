@@ -1,10 +1,9 @@
 kaboom({
     width: 800,
     height: 600,
-    letterbox: true,   // PŘIDÁNO: Udrží poměr stran a černé pruhy místo deformace
+    letterbox: true,   // Udrží poměr stran 4:3 a zobrazí černé pruhy tam, kde není hra
     background: [0, 0, 0],
     scale: 1,
-    touchToMouse: true, 
     global: true,
 });
 
