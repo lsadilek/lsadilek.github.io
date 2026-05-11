@@ -24,22 +24,25 @@
         /* 2. Nastavení herního plátna */
                
         canvas {
-            font-family: 'Arial', sans-serif;
             display: block;
-            
-            /* Responzivita: hra se přizpůsobí šířce mobilu */
+            /* Na mobilu vyplní šířku, ale na PC nepřeleze 800px */
             width: 100vw;
+            max-width: 800px; 
+            
+            /* Výška se dopočítá podle poměru stran, ale nepřeleze 600px na PC */
             height: auto;
-            max-width: 800px;
             max-height: 600px;
-            aspect-ratio: 800 / 600; /* Důležité pro přesnost dotyku! */
+            
+            /* Klíč pro mobily: udrží poměr stran a zajistí, že uvidíš všechno */
+            aspect-ratio: 800 / 600;
+            object-fit: contain;
 
-            /* Zákaz gest prohlížeče */
+            background-color: #000;
             touch-action: none;
-            -webkit-touch-callout: none;
             user-select: none;
             -webkit-tap-highlight-color: transparent;
         }
+
                 
                 
         
