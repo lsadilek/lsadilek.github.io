@@ -1,18 +1,10 @@
-// ZÁKAZY SCROLLOVÁNÍ (Musí být samostatně, ne v kaboom)
-/*window.addEventListener("touchstart", (e) => {
-    if (e.target.tagName === "CANVAS") e.preventDefault();
-}, { passive: false });  */
-
-window.addEventListener("touchmove", (e) => {
-    if (e.target.tagName === "CANVAS") e.preventDefault();
-}, { passive: false });
-
 kaboom({
     width: 800,
     height: 600,
+    letterbox: true,   // PŘIDÁNO: Udrží poměr stran a černé pruhy místo deformace
     background: [0, 0, 0],
     scale: 1,
-    touchToMouse: true, // Změněno zpět na true
+    touchToMouse: true, 
     global: true,
 });
 
@@ -254,38 +246,32 @@ scene("game", () => {
     let startTouches = {};
     let touchMoveDir = { p1: vec2(0,0), p2: vec2(0,0) };
 
-    // Snímání dotyků - OPRAVENÁ VERZE
+    // Snímání dotyků
     onTouchStart((pos, t) => { 
-        // Ukládáme startovní pozici prstu (používáme t.pos pro souřadnice displeje)
-        startTouches[t.id] = t.pos; 
+        startTouches[t.id] = pos; 
     });
 
     onTouchMove((pos, t) => {
         const start = startTouches[t.id];
         if (!start) return;
+        const delta = pos.sub(start);
 
-        // Vypočítáme rozdíl mezi aktuální pozicí prstu a tou předchozí
-        const delta = t.pos.sub(start);
-
-        if (delta.len() > 2) { // Citlivost pohybu
-            const stredDispleje = window.innerWidth / 2;
-            
-            // Rozhodujeme podle toho, kde na DISPLEJI (t.pos.x) prst začal
-            if (start.x < stredDispleje) {
+        if (delta.len() > 2) {
+            const stredHry = width() / 2; // Polovina z 800px
+            if (start.x < stredHry) {
                 touchMoveDir.p1 = delta.unit();
             } else {
                 touchMoveDir.p2 = delta.unit();
             }
         }
-        // Aktualizace pozice pro plynulý swipe
-        startTouches[t.id] = t.pos;
+        startTouches[t.id] = pos;
     });
 
     onTouchEnd((pos, t) => {
         const start = startTouches[t.id];
         if (start) {
-            const stredDispleje = window.innerWidth / 2;
-            if (start.x < stredDispleje) {
+            const stredHry = width() / 2; // Sjednoceno na width()
+            if (start.x < stredHry) {
                 touchMoveDir.p1 = vec2(0,0);
             } else {
                 touchMoveDir.p2 = vec2(0,0);
@@ -293,7 +279,6 @@ scene("game", () => {
             delete startTouches[t.id];
         }
     });
-
 
     // Pozadí s náhodnou trávou
     for (let y = 0; y < 19; y++) {

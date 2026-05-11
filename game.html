@@ -20,16 +20,14 @@
             height: 100%;
             touch-action: none;
         }
-
         canvas {
             font-family: 'Arial', sans-serif;
-            /* Na PC pevná šířka, na mobilu se přizpůsobí */
-            max-width: 100%;
-            max-height: 100%;
+            /* TYTO ŘÁDKY UPRAV: */
+            max-width: 100vw;   /* Maximálně šířka displeje */
+            max-height: 100vh;  /* Maximálně výška displeje */
+            object-fit: contain; /* Zachová poměr stran 800:600 bez deformace */
             display: block;
-            
-            /* Zákaz systémových gest přímo na hře */
-            touch-action: none;
+            touch-action: none; /* ZÁKAZ SCROLLOVÁNÍ NA ÚROVNI PROHLÍŽEČE */
             -webkit-touch-callout: none;
             user-select: none;
             
