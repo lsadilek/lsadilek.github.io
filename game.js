@@ -1,9 +1,7 @@
-const canvas = document.getElementById("game");
-
 kaboom({
-    canvas: canvas,
-    width: canvas.width,
-    height: canvas.height,
+    canvas: document.getElementById("game"),
+    width: document.getElementById("game").width,
+    height: document.getElementById("game").height,
     background: [0, 0, 0],
     stretch: true,
     letterbox: true,
