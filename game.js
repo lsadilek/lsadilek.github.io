@@ -1,7 +1,7 @@
 // ZÁKAZY SCROLLOVÁNÍ (Musí být samostatně, ne v kaboom)
-window.addEventListener("touchstart", (e) => {
+/*window.addEventListener("touchstart", (e) => {
     if (e.target.tagName === "CANVAS") e.preventDefault();
-}, { passive: false });
+}, { passive: false });  */
 
 window.addEventListener("touchmove", (e) => {
     if (e.target.tagName === "CANVAS") e.preventDefault();
@@ -239,9 +239,11 @@ scene("start", () => {
         go("game");
     }
 
+    // Kombinované ovládání pro start
     onMousePress(begin);
     onKeyPress(begin);
-    onTouchStart(begin); // PŘIDÁNO: Spustí hru i po dotyku na mobilu
+    onClick(begin); // Toto v Kaboom často funguje pro obojí (myš i dotyk)
+    onTouchStart(begin);
 });
 
 
