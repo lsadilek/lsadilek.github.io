@@ -256,11 +256,8 @@ scene("game", () => {
         const delta = pos.sub(start);
 
         if (delta.len() > 2) {
-            // KLÍČOVÁ ZMĚNA: Dělíme podle šířky DISPLEJE, ne podle pixelů hry
-            const stredDispleje = window.innerWidth / 2;
-            
-            // t.pos.x je skutečná poloha prstu na skle mobilu
-            if (t.pos.x < stredDispleje) {
+            const stredHry = width() / 2; // Polovina z 800px
+            if (start.x < stredHry) {
                 touchMoveDir.p1 = delta.unit();
             } else {
                 touchMoveDir.p2 = delta.unit();
@@ -270,9 +267,10 @@ scene("game", () => {
     });
 
     onTouchEnd((pos, t) => {
-        if (startTouches[t.id]) {
-            const stredDispleje = window.innerWidth / 2;
-            if (t.pos.x < stredDispleje) {
+        const start = startTouches[t.id];
+        if (start) {
+            const stredHry = width() / 2; // Sjednoceno na width()
+            if (start.x < stredHry) {
                 touchMoveDir.p1 = vec2(0,0);
             } else {
                 touchMoveDir.p2 = vec2(0,0);
@@ -280,7 +278,8 @@ scene("game", () => {
             delete startTouches[t.id];
         }
     });
- 
+
+
     // Pozadí s náhodnou trávou
     for (let y = 0; y < 19; y++) {
         for (let x = 0; x < 25; x++) {
