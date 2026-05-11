@@ -1,8 +1,7 @@
-});
 kaboom({
     width: 800,
     height: 600,
-    letterbox: true, 
+    letterbox: true, // Klíčové pro správné zobrazení na všech displejích
     background: [0, 0, 0],
     scale: 1,
     global: true,
@@ -254,14 +253,11 @@ scene("game", () => {
     onTouchMove((pos, t) => {
         const start = startTouches[t.id];
         if (!start) return;
-        const delta = pos.sub(start);
 
+        const delta = pos.sub(start);
         if (delta.len() > 2) {
-            // Použijeme raději window.innerWidth, je to na mobilech jistější pro dělení stran
-            const stredObrazovky = window.innerWidth / 2;
-            
-            // t.pos.x je skutečná pozice prstu na skle mobilu
-            if (t.pos.x < stredObrazovky) {
+            const stredHry = width() / 2;
+            if (start.x < stredHry) {
                 touchMoveDir.p1 = delta.unit();
             } else {
                 touchMoveDir.p2 = delta.unit();
@@ -271,12 +267,12 @@ scene("game", () => {
     });
 
     onTouchEnd((pos, t) => {
+        // Kontrola, zda t.id existuje, zabrání chybě TypeError
         if (startTouches[t.id]) {
-            const stredObrazovky = window.innerWidth / 2;
-            // Použijeme t.pos pouze pokud existuje, jinak pos
-            const currentX = t.pos ? t.pos.x : pos.x;
+            const stredHry = width() / 2;
+            const startX = startTouches[t.id].x;
             
-            if (currentX < stredObrazovky) {
+            if (startX < stredHry) {
                 touchMoveDir.p1 = vec2(0,0);
             } else {
                 touchMoveDir.p2 = vec2(0,0);
@@ -284,6 +280,7 @@ scene("game", () => {
             delete startTouches[t.id];
         }
     });
+
     // Pozadí s náhodnou trávou
     for (let y = 0; y < 19; y++) {
         for (let x = 0; x < 25; x++) {
