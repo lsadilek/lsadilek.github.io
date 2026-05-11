@@ -242,68 +242,68 @@ scene("start", () => {
 // Scéna hry
 // ---------------------------------------------------------
 
-scene("game", () => {
+    scene("game", () => {
 
-    // --- DOTYKOVÉ OVLÁDÁNÍ S UZAMČENÍM STRANY ---
-    let touches = {};
+        // --- DOTYKOVÉ OVLÁDÁNÍ S UZAMČENÍM STRANY ---
+        let touches = {};
 
-    function toCanvasPos(screenPos) {
-        const rect = document.getElementById("game").getBoundingClientRect();
-        const scaleX = 800 / rect.width;
-        const scaleY = 600 / rect.height;
-        return vec2(
-            (screenPos.x - rect.left) * scaleX,
-            (screenPos.y - rect.top) * scaleY
-        );
-    }
+        // pokud zařízení nemá dotyk, přeskočíme celý blok
+        if (!("ontouchstart" in window)) {
+            touchMoveDir = { p1: vec2(0, 0), p2: vec2(0, 0) };
+        } else {
 
-    onTouchStart((pos, t) => {
-        const p = toCanvasPos(pos);
-        const mid = 800 / 2;
+            function toCanvasPos(screenPos) {
+                const rect = document.getElementById("game").getBoundingClientRect();
+                const scaleX = 800 / rect.width;
+                const scaleY = 600 / rect.height;
+                return vec2(
+                    (screenPos.x - rect.left) * scaleX,
+                    (screenPos.y - rect.top) * scaleY
+                );
+            }
 
-        // přiřadíme hráče podle strany, kde dotyk začal
-        touches[t.id] = {
-            player: p.x < mid ? "p1" : "p2",
-            start: p.clone()
-        };
-    });
+            onTouchStart((pos, t) => {
+                const p = toCanvasPos(pos);
+                const mid = 800 / 2;
+                touches[t.id] = {
+                    player: p.x < mid ? "p1" : "p2",
+                    start: p.clone()
+                };
+            });
 
-    onTouchMove((pos, t) => {
-        const info = touches[t.id];
-        if (!info) return;
+            onTouchMove((pos, t) => {
+                const info = touches[t.id];
+                if (!info) return;
 
-        const p = toCanvasPos(pos);
-        const delta = p.sub(info.start);
+                const p = toCanvasPos(pos);
+                const delta = p.sub(info.start);
 
-        // pokud prst přejede na druhou půlku, ignorujeme pohyb
-        const mid = 800 / 2;
-        if ((info.player === "p1" && p.x >= mid) || (info.player === "p2" && p.x < mid)) {
-            // prst je mimo svou půlku → hráč se zastaví
-            if (info.player === "p1") touchMoveDir.p1 = vec2(0, 0);
-            else touchMoveDir.p2 = vec2(0, 0);
-            return;
-        }
+                const mid = 800 / 2;
+                if ((info.player === "p1" && p.x >= mid) || (info.player === "p2" && p.x < mid)) {
+                    if (info.player === "p1") touchMoveDir.p1 = vec2(0, 0);
+                    else touchMoveDir.p2 = vec2(0, 0);
+                    return;
+                }
 
-        if (delta.len() > 4) {
-            if (info.player === "p1") touchMoveDir.p1 = delta.unit();
-            else touchMoveDir.p2 = delta.unit();
-        }
+                if (delta.len() > 4) {
+                    if (info.player === "p1") touchMoveDir.p1 = delta.unit();
+                    else touchMoveDir.p2 = delta.unit();
+                }
 
-        info.start = p.clone();
-    });
+                info.start = p.clone();
+            });
 
-    onTouchEnd((pos, t) => {
-        const info = touches[t.id];
-        if (!info) return;
+            onTouchEnd((pos, t) => {
+                const info = touches[t.id];
+                if (!info) return;
 
-        if (info.player === "p1") touchMoveDir.p1 = vec2(0, 0);
-        else touchMoveDir.p2 = vec2(0, 0);
+                if (info.player === "p1") touchMoveDir.p1 = vec2(0, 0);
+                else touchMoveDir.p2 = vec2(0, 0);
 
-        delete touches[t.id];
-    });
-
-
-    // Pozadí s náhodnou trávou
+                delete touches[t.id];
+            });
+ 
+     // Pozadí s náhodnou trávou
     for (let y = 0; y < 19; y++) {
         for (let x = 0; x < 25; x++) {
             add([
