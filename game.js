@@ -1,11 +1,9 @@
 kaboom({
     canvas: document.getElementById("game"),
-    width: document.getElementById("game").width,
-    height: document.getElementById("game").height,
+    width: 800,
+    height: 600,
     background: [0, 0, 0],
-    scale: 1,
-    stretch: false,
-    letterbox: false,
+    letterbox: true,
 });
 
 // ---------------------------------------------------------

@@ -15,19 +15,14 @@
             height: 100%;
             overflow: hidden;
             background: #121212;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: fixed;
-            inset: 0;
             touch-action: none;
         }
 
-        #game-container {
-            position: relative;
-        }
-
+        /* Canvas má pevné interní rozměry (800×600),
+           ale vizuálně se roztáhne na celou obrazovku */
         #game {
+            width: 100vw;
+            height: 100vh;
             display: block;
             touch-action: none;
             user-select: none;
@@ -38,63 +33,16 @@
 
 <body>
 
-    <div id="game-container">
-        <canvas id="game"></canvas>
-    </div>
+    <canvas id="game" width="800" height="600"></canvas>
 
     <!-- Kaboom -->
     <script src="https://unpkg.com/kaboom@3000.0.0/dist/kaboom.js"></script>
-
-    <!-- Dynamické přizpůsobení canvasu -->
-    <script>
-        const canvas = document.getElementById("game");
-        const container = document.getElementById("game-container");
-
-        function resizeCanvas() {
-            const isPC = window.innerWidth > 900;
-
-            if (isPC) {
-                canvas.width = 800;
-                canvas.height = 600;
-                container.style.width = "800px";
-                container.style.height = "600px";
-                return;
-            }
-
-            const w = window.innerWidth;
-            const h = window.innerHeight;
-            const aspect = 4 / 3;
-            let newW, newH;
-
-            if (w < h) {
-                newW = w;
-                newH = w / aspect;
-            } else {
-                newH = h;
-                newW = h * aspect;
-            }
-
-            canvas.width = newW;
-            canvas.height = newH;
-            container.style.width = newW + "px";
-            container.style.height = newH + "px";
-        }
-
-        window.addEventListener("resize", resizeCanvas);
-        window.addEventListener("orientationchange", resizeCanvas);
-        resizeCanvas();
-        
-        window.addEventListener("orientationchange", () => {
-            resizeCanvas();
-            location.reload();
-        });
-
-    </script>
 
     <!-- Tvoje hra -->
     <script src="game.js"></script>
 
 </body>
 </html>
+
 
 
