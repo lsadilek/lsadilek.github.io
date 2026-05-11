@@ -4,6 +4,7 @@ kaboom({
     background: [0, 0, 0],
     scale: 1,
     global: true,
+    letterbox: true 
     canvas: document.querySelector("canvas"),
 });
 
@@ -246,50 +247,47 @@ scene("game", () => {
     let touchMoveDir = { p1: vec2(0,0), p2: vec2(0,0) };
 
     // Snímání dotyků
-    // 1. Ukládání startu dotyku
+    // 1. Start dotyku
     onTouchStart((p, t) => {
-        // Uložíme jen prostý objekt s X a Y, aby Kaboom neprotestoval
-        startTouches[t.id] = { x: t.pos.x, y: t.pos.y };
+        startTouches[t.id] = t.pos;
     });
 
     // 2. Pohyb prstu
     onTouchMove((p, t) => {
-        const start = startTouches[t.id];
-        if (!start) return;
+        const s = startTouches[t.id];
+        if (!s) return;
 
-        // Ruční výpočet směru (nepoužíváme sub ani unit, aby to neházelo chybu)
-        const dx = t.pos.x - start.x;
-        const dy = t.pos.y - start.y;
+        // Výpočet směru postaru, aby to nepadalo
+        const dx = t.pos.x - s.x;
+        const dy = t.pos.y - s.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
 
         if (dist > 5) {
-            const stredSkla = window.innerWidth / 2;
-            // Směrový vektor (normalizovaný ručně)
             const dir = vec2(dx / dist, dy / dist);
+            const stred = window.innerWidth / 2;
 
-            if (start.x < stredSkla) {
+            if (s.x < stred) {
                 touchMoveDir.p1 = dir;
             } else {
                 touchMoveDir.p2 = dir;
             }
         }
-        // Aktualizace startu pro plynulost
-        startTouches[t.id] = { x: t.pos.x, y: t.pos.y };
+        startTouches[t.id] = t.pos;
     });
 
     // 3. Konec dotyku
     onTouchEnd((p, t) => {
-        if (startTouches[t.id]) {
-            const stredSkla = window.innerWidth / 2;
-            if (startTouches[t.id].x < stredSkla) {
-                touchMoveDir.p1 = vec2(0,0);
+        const s = startTouches[t.id];
+        if (s) {
+            const stred = window.innerWidth / 2;
+            if (s.x < stred) {
+                touchMoveDir.p1 = vec2(0, 0);
             } else {
-                touchMoveDir.p2 = vec2(0,0);
+                touchMoveDir.p2 = vec2(0, 0);
             }
-            delete startTouches[t.id];
         }
+        delete startTouches[t.id];
     });
-
 
     // Pozadí s náhodnou trávou
     for (let y = 0; y < 19; y++) {

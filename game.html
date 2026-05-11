@@ -25,25 +25,33 @@
                
         canvas {
             display: block;
-            /* Na mobilu vyplní šířku, ale na PC nepřeleze 800px */
+            /* Na mobilu vyplní šířku, na PC se zastaví na 800px */
             width: 100vw;
-            max-width: 800px; 
+            max-width: 800px;
             
-            /* Výška se dopočítá podle poměru stran, ale nepřeleze 600px na PC */
+            /* Výška se dopočítá podle poměru stran, na PC max 600px */
             height: auto;
             max-height: 600px;
             
-            /* Klíč pro mobily: udrží poměr stran a zajistí, že uvidíš všechno */
+            /* Udrží správný tvar hřiště, aby postavy nebyly placaté */
             aspect-ratio: 800 / 600;
             object-fit: contain;
 
             background-color: #000;
+            
+            /* ZÁKAZY PRO MOBIL (aby se obrazovka nehýbala) */
             touch-action: none;
             user-select: none;
+            -webkit-user-select: none;
             -webkit-tap-highlight-color: transparent;
-            
             pointer-events: auto;
+
+            /* OKRASNÝ RÁMEČEK (přidán zpět tak, aby na mobilu nezavazel) */
+            border: 8px solid #444;
+            outline: 4px solid #000;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
+
 
                 
                 
