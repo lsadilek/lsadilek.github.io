@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="utf-8">
+    <title>Kdo nasbírá víc hub – JS verze</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #121212; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        canvas {
+            font-family: 'Arial', sans-serif;
+            width: 800px !important;
+            height: 600px !important;
+            display: block;
+            
+            /* OKRASNÝ RÁMEČEK */
+            border: 8px solid #444;           /* Hlavní rám */
+            border-image: linear-gradient(to bottom, #666, #222) 1; /* Kovový efekt */
+            outline: 4px solid #000;          /* Vnější černá linka */
+            box-shadow: 
+                0 0 0 12px #333,              /* Širší vnější okraj */
+                0 20px 50px rgba(0,0,0,0.9);  /* Velký stín pod celým oknem */
+        }
+    </style>
+
+</head>
+<body>
+    <script src="https://unpkg.com/kaboom@3000.0.0/dist/kaboom.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>
+
