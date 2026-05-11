@@ -1,12 +1,10 @@
 const canvas = document.querySelector("#game");
 
 kaboom({
-    width: canvas.width,
-    height: canvas.height,
-    background: [0, 0, 0],
-    scale: 1,
-    global: true,
     canvas: canvas,
+    background: [0, 0, 0],
+    stretch: true,
+    letterbox: true,
 });
 
 // ---------------------------------------------------------
