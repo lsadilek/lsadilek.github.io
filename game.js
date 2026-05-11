@@ -244,17 +244,17 @@ scene("start", () => {
 
     scene("game", () => {
 
-      // --- DOTYKOVÉ OVLÁDÁNÍ PRO DVA HRÁČE ---
-      let touches = {};
+      // --- DOKONALÉ DOTYKOVÉ OVLÁDÁNÍ PRO 2 HRÁČE ---
+      let activeTouchP1 = null;
+      let activeTouchP2 = null;
+
       let touchStartP1 = null;
       let touchStartP2 = null;
-      let touchPosP1 = null;
-      let touchPosP2 = null;
 
       function toCanvasPos(screenPos) {
           const rect = document.getElementById("game").getBoundingClientRect();
-          const scaleX = 800 / rect.width;
-          const scaleY = 600 / rect.height;
+          const scaleX = width() / rect.width;
+          const scaleY = height() / rect.height;
           return vec2(
               (screenPos.x - rect.left) * scaleX,
               (screenPos.y - rect.top) * scaleY
@@ -263,74 +263,81 @@ scene("start", () => {
 
       onTouchStart((pos, t) => {
           const p = toCanvasPos(pos);
-          const mid = 800 / 2;
+          const mid = width() / 2;
 
-          if (p.x < mid) {
-              touches[t.id] = "p1";
+          // hráč 1
+          if (p.x < mid && activeTouchP1 === null) {
+              activeTouchP1 = t.id;
               touchStartP1 = p.clone();
-              touchPosP1 = p.clone();
-          } else {
-              touches[t.id] = "p2";
+              touchMoveDir.p1 = vec2(0, 0);
+          }
+
+          // hráč 2
+          if (p.x >= mid && activeTouchP2 === null) {
+              activeTouchP2 = t.id;
               touchStartP2 = p.clone();
-              touchPosP2 = p.clone();
+              touchMoveDir.p2 = vec2(0, 0);
           }
       });
 
       onTouchMove((pos, t) => {
-          const player = touches[t.id];
-          if (!player) return;
-
           const p = toCanvasPos(pos);
-          const mid = 800 / 2;
+          const mid = width() / 2;
 
-          if (player === "p1") {
-              // přejel na pravou půlku → STOP
+          // --- HRÁČ 1 ---
+          if (t.id === activeTouchP1) {
+
+              // přejetí na pravou půlku = STOP
               if (p.x >= mid) {
                   touchMoveDir.p1 = vec2(0, 0);
                   return;
               }
 
-              touchPosP1 = p.clone();
-              const delta = touchPosP1.sub(touchStartP1);
-              if (delta.len() > 6) touchMoveDir.p1 = delta.unit();
+              const delta = p.sub(touchStartP1);
+              if (delta.len() > 6) {
+                  touchMoveDir.p1 = delta.unit();
+              }
           }
 
-          if (player === "p2") {
-              // přejel na levou půlku → STOP
+          // --- HRÁČ 2 ---
+          if (t.id === activeTouchP2) {
+
+              // přejetí na levou půlku = STOP
               if (p.x < mid) {
                   touchMoveDir.p2 = vec2(0, 0);
                   return;
               }
 
-              touchPosP2 = p.clone();
-              const delta = touchPosP2.sub(touchStartP2);
-              if (delta.len() > 6) touchMoveDir.p2 = delta.unit();
+              const delta = p.sub(touchStartP2);
+              if (delta.len() > 6) {
+                  touchMoveDir.p2 = delta.unit();
+              }
           }
       });
 
       onTouchEnd((pos, t) => {
-          const player = touches[t.id];
 
-          if (player === "p1") {
+          // hráč 1 zvedl prst
+          if (t.id === activeTouchP1) {
+              activeTouchP1 = null;
               touchMoveDir.p1 = vec2(0, 0);
               touchStartP1 = null;
-              touchPosP1 = null;
           }
 
-          if (player === "p2") {
+          // hráč 2 zvedl prst
+          if (t.id === activeTouchP2) {
+              activeTouchP2 = null;
               touchMoveDir.p2 = vec2(0, 0);
               touchStartP2 = null;
-              touchPosP2 = null;
           }
 
-          delete touches[t.id];
-
-          // žádný prst → oba stojí
-          if (Object.keys(touches).length === 0) {
+          // žádný prst = oba STOP
+          if (activeTouchP1 === null && activeTouchP2 === null) {
               touchMoveDir.p1 = vec2(0, 0);
               touchMoveDir.p2 = vec2(0, 0);
           }
       });
+
           
      // Pozadí s náhodnou trávou
     for (let y = 0; y < 19; y++) {
