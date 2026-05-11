@@ -246,6 +246,8 @@ scene("start", () => {
 
       // --- DOTYKOVÉ OVLÁDÁNÍ PRO DVA HRÁČE ---
       let touches = {};
+      let touchStartP1 = null;
+      let touchStartP2 = null;
 
       function toCanvasPos(screenPos) {
           const rect = document.getElementById("game").getBoundingClientRect();
@@ -261,44 +263,51 @@ scene("start", () => {
           const p = toCanvasPos(pos);
           const mid = 800 / 2;
 
-          touches[t.id] = {
-              player: p.x < mid ? "p1" : "p2",
-              start: p.clone()   // start se už NIKDY nebude měnit
-          };
+          if (p.x < mid) {
+              touches[t.id] = "p1";
+              touchStartP1 = p.clone();
+          } else {
+              touches[t.id] = "p2";
+              touchStartP2 = p.clone();
+          }
       });
 
       onTouchMove((pos, t) => {
-          const info = touches[t.id];
-          if (!info) return;
+          const player = touches[t.id];
+          if (!player) return;
 
           const p = toCanvasPos(pos);
           const mid = 800 / 2;
 
           // přejel na druhou půlku → STOP
-          if ((info.player === "p1" && p.x >= mid) ||
-              (info.player === "p2" && p.x < mid)) {
-
-              if (info.player === "p1") touchMoveDir.p1 = vec2(0, 0);
-              else touchMoveDir.p2 = vec2(0, 0);
+          if (player === "p1" && p.x >= mid) {
+              touchMoveDir.p1 = vec2(0, 0);
+              return;
+          }
+          if (player === "p2" && p.x < mid) {
+              touchMoveDir.p2 = vec2(0, 0);
               return;
           }
 
-          // směr = rozdíl mezi aktuální pozicí a startem
-          const delta = p.sub(info.start);
+          // výpočet směru podle hráče
+          if (player === "p1" && touchStartP1) {
+              const delta = p.sub(touchStartP1);
+              if (delta.len() > 6) touchMoveDir.p1 = delta.unit();
+          }
 
-          if (delta.len() > 6) {
-              if (info.player === "p1") touchMoveDir.p1 = delta.unit();
-              else touchMoveDir.p2 = delta.unit();
+          if (player === "p2" && touchStartP2) {
+              const delta = p.sub(touchStartP2);
+              if (delta.len() > 6) touchMoveDir.p2 = delta.unit();
           }
       });
 
       onTouchEnd((pos, t) => {
-          const info = touches[t.id];
-          if (info) {
-              if (info.player === "p1") touchMoveDir.p1 = vec2(0, 0);
-              else touchMoveDir.p2 = vec2(0, 0);
-              delete touches[t.id];
-          }
+          const player = touches[t.id];
+
+          if (player === "p1") touchMoveDir.p1 = vec2(0, 0);
+          if (player === "p2") touchMoveDir.p2 = vec2(0, 0);
+
+          delete touches[t.id];
 
           // žádný prst → oba stojí
           if (Object.keys(touches).length === 0) {
@@ -306,6 +315,7 @@ scene("start", () => {
               touchMoveDir.p2 = vec2(0, 0);
           }
       });
+
 
 
          
