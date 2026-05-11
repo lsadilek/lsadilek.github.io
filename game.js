@@ -3,8 +3,9 @@ kaboom({
     width: document.getElementById("game").width,
     height: document.getElementById("game").height,
     background: [0, 0, 0],
-    stretch: true,     // zachová přizpůsobení oknu
-    letterbox: false,  // vypne ořezávání a černé pruhy
+    scale: 1,
+    stretch: false,
+    letterbox: false,
 });
 
 // ---------------------------------------------------------

@@ -83,6 +83,12 @@
         window.addEventListener("resize", resizeCanvas);
         window.addEventListener("orientationchange", resizeCanvas);
         resizeCanvas();
+        
+        window.addEventListener("orientationchange", () => {
+            resizeCanvas();
+            location.reload();
+        });
+
     </script>
 
     <!-- Tvoje hra -->
