@@ -247,38 +247,35 @@ scene("game", () => {
 
     // Snímání dotyků
     onTouchStart((pos, t) => { 
-        // Uložíme si herní pozici (pos) pro výpočet směru,
-        // ale přidáme i t.pos.x (fyzický dotyk) pro určení strany
-        startTouches[t.id] = { gamePos: pos, screenX: t.pos.x }; 
+        // Ukládáme pouze fyzickou pozici na skle (t.pos)
+        startTouches[t.id] = t.pos.clone(); 
     });
 
     onTouchMove((pos, t) => {
-        const startData = startTouches[t.id];
-        if (!startData) return;
+        const start = startTouches[t.id];
+        if (!start) return;
 
-        // Výpočet směru pohybu (delta) v herních souřadnicích
-        const delta = pos.sub(startData.gamePos);
+        // Rozdíl počítáme z čistých pixelů displeje
+        const delta = t.pos.sub(start);
 
         if (delta.len() > 2) {
-            // Rozhodujeme podle toho, kde na SKLE mobilu prst začal
-            const stredDispleje = window.innerWidth / 2;
+            const stredSkla = window.innerWidth / 2;
             
-            if (startData.screenX < stredDispleje) {
+            // Rozhodujeme podle toho, kde se prst fyzicky dotýká skla
+            if (start.x < stredSkla) {
                 touchMoveDir.p1 = delta.unit();
             } else {
                 touchMoveDir.p2 = delta.unit();
             }
         }
-        // Aktualizujeme herní pozici pro plynulý swipe
-        startData.gamePos = pos;
+        // Aktualizujeme startovní pozici na aktuální fyzickou pozici
+        startTouches[t.id] = t.pos.clone();
     });
 
     onTouchEnd((pos, t) => {
-        const startData = startTouches[t.id];
-        if (startData) {
-            const stredDispleje = window.innerWidth / 2;
-            // Zastavíme hráče podle toho, na které straně prst začal
-            if (startData.screenX < stredDispleje) {
+        if (startTouches[t.id]) {
+            const stredSkla = window.innerWidth / 2;
+            if (startTouches[t.id].x < stredSkla) {
                 touchMoveDir.p1 = vec2(0,0);
             } else {
                 touchMoveDir.p2 = vec2(0,0);
@@ -286,7 +283,6 @@ scene("game", () => {
             delete startTouches[t.id];
         }
     });
-
 
     // Pozadí s náhodnou trávou
     for (let y = 0; y < 19; y++) {
