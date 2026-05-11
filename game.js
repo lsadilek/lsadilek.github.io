@@ -776,9 +776,7 @@ scene("ceremony", ({ s1, s2 }) => {
     ]);
 
     // Stačí toto jedno volání - funguje na myš i dotyk
-    btn.onClick(() => {
-        go("game");
-    });
+    btn.onClick(() => go("game"));
 
     // Funkce pro ohňostroj (definovaná jen jednou)
     function spawnRandomFirework() {
