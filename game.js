@@ -248,6 +248,8 @@ scene("start", () => {
       let touches = {};
       let touchStartP1 = null;
       let touchStartP2 = null;
+      let touchPosP1 = null;
+      let touchPosP2 = null;
 
       function toCanvasPos(screenPos) {
           const rect = document.getElementById("game").getBoundingClientRect();
@@ -266,9 +268,11 @@ scene("start", () => {
           if (p.x < mid) {
               touches[t.id] = "p1";
               touchStartP1 = p.clone();
+              touchPosP1 = p.clone();
           } else {
               touches[t.id] = "p2";
               touchStartP2 = p.clone();
+              touchPosP2 = p.clone();
           }
       });
 
@@ -279,24 +283,27 @@ scene("start", () => {
           const p = toCanvasPos(pos);
           const mid = 800 / 2;
 
-          // přejel na druhou půlku → STOP
-          if (player === "p1" && p.x >= mid) {
-              touchMoveDir.p1 = vec2(0, 0);
-              return;
-          }
-          if (player === "p2" && p.x < mid) {
-              touchMoveDir.p2 = vec2(0, 0);
-              return;
-          }
+          if (player === "p1") {
+              // přejel na pravou půlku → STOP
+              if (p.x >= mid) {
+                  touchMoveDir.p1 = vec2(0, 0);
+                  return;
+              }
 
-          // výpočet směru podle hráče
-          if (player === "p1" && touchStartP1) {
-              const delta = p.sub(touchStartP1);
+              touchPosP1 = p.clone();
+              const delta = touchPosP1.sub(touchStartP1);
               if (delta.len() > 6) touchMoveDir.p1 = delta.unit();
           }
 
-          if (player === "p2" && touchStartP2) {
-              const delta = p.sub(touchStartP2);
+          if (player === "p2") {
+              // přejel na levou půlku → STOP
+              if (p.x < mid) {
+                  touchMoveDir.p2 = vec2(0, 0);
+                  return;
+              }
+
+              touchPosP2 = p.clone();
+              const delta = touchPosP2.sub(touchStartP2);
               if (delta.len() > 6) touchMoveDir.p2 = delta.unit();
           }
       });
@@ -304,8 +311,17 @@ scene("start", () => {
       onTouchEnd((pos, t) => {
           const player = touches[t.id];
 
-          if (player === "p1") touchMoveDir.p1 = vec2(0, 0);
-          if (player === "p2") touchMoveDir.p2 = vec2(0, 0);
+          if (player === "p1") {
+              touchMoveDir.p1 = vec2(0, 0);
+              touchStartP1 = null;
+              touchPosP1 = null;
+          }
+
+          if (player === "p2") {
+              touchMoveDir.p2 = vec2(0, 0);
+              touchStartP2 = null;
+              touchPosP2 = null;
+          }
 
           delete touches[t.id];
 
@@ -315,10 +331,7 @@ scene("start", () => {
               touchMoveDir.p2 = vec2(0, 0);
           }
       });
-
-
-
-         
+          
      // Pozadí s náhodnou trávou
     for (let y = 0; y < 19; y++) {
         for (let x = 0; x < 25; x++) {
