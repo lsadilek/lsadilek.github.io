@@ -261,10 +261,9 @@ scene("start", () => {
           const p = toCanvasPos(pos);
           const mid = 800 / 2;
 
-          // přiřadíme hráče podle strany, kde dotyk začal
           touches[t.id] = {
               player: p.x < mid ? "p1" : "p2",
-              start: p.clone()
+              start: p.clone()   // start se už NIKDY nebude měnit
           };
       });
 
@@ -273,23 +272,24 @@ scene("start", () => {
           if (!info) return;
 
           const p = toCanvasPos(pos);
-          const delta = p.sub(info.start);
           const mid = 800 / 2;
 
-          // pokud prst přejede na druhou půlku, hráč se zastaví
-          if ((info.player === "p1" && p.x >= mid) || (info.player === "p2" && p.x < mid)) {
+          // přejel na druhou půlku → STOP
+          if ((info.player === "p1" && p.x >= mid) ||
+              (info.player === "p2" && p.x < mid)) {
+
               if (info.player === "p1") touchMoveDir.p1 = vec2(0, 0);
               else touchMoveDir.p2 = vec2(0, 0);
               return;
           }
 
-          // aktualizace směru pohybu
-          if (delta.len() > 4) {
+          // směr = rozdíl mezi aktuální pozicí a startem
+          const delta = p.sub(info.start);
+
+          if (delta.len() > 6) {
               if (info.player === "p1") touchMoveDir.p1 = delta.unit();
               else touchMoveDir.p2 = delta.unit();
           }
-
-          info.start = p.clone();
       });
 
       onTouchEnd((pos, t) => {
@@ -300,12 +300,13 @@ scene("start", () => {
               delete touches[t.id];
           }
 
-          // 🔥 Pokud už není žádný prst → oba hráči stojí
+          // žádný prst → oba stojí
           if (Object.keys(touches).length === 0) {
               touchMoveDir.p1 = vec2(0, 0);
               touchMoveDir.p2 = vec2(0, 0);
           }
       });
+
 
          
      // Pozadí s náhodnou trávou
