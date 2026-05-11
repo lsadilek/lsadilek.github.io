@@ -246,33 +246,39 @@ scene("game", () => {
     let touchMoveDir = { p1: vec2(0,0), p2: vec2(0,0) };
 
     // Snímání dotyků
-    onTouchStart((pos, t) => { 
-        // Ukládáme pouze fyzickou pozici na skle (t.pos)
-        startTouches[t.id] = t.pos.clone(); 
+    // 1. Ukládání startu dotyku
+    onTouchStart((p, t) => {
+        // Uložíme jen prostý objekt s X a Y, aby Kaboom neprotestoval
+        startTouches[t.id] = { x: t.pos.x, y: t.pos.y };
     });
 
-    onTouchMove((pos, t) => {
+    // 2. Pohyb prstu
+    onTouchMove((p, t) => {
         const start = startTouches[t.id];
         if (!start) return;
 
-        // Rozdíl počítáme z čistých pixelů displeje
-        const delta = t.pos.sub(start);
+        // Ruční výpočet směru (nepoužíváme sub ani unit, aby to neházelo chybu)
+        const dx = t.pos.x - start.x;
+        const dy = t.pos.y - start.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
 
-        if (delta.len() > 2) {
+        if (dist > 5) {
             const stredSkla = window.innerWidth / 2;
-            
-            // Rozhodujeme podle toho, kde se prst fyzicky dotýká skla
+            // Směrový vektor (normalizovaný ručně)
+            const dir = vec2(dx / dist, dy / dist);
+
             if (start.x < stredSkla) {
-                touchMoveDir.p1 = delta.unit();
+                touchMoveDir.p1 = dir;
             } else {
-                touchMoveDir.p2 = delta.unit();
+                touchMoveDir.p2 = dir;
             }
         }
-        // Aktualizujeme startovní pozici na aktuální fyzickou pozici
-        startTouches[t.id] = t.pos.clone();
+        // Aktualizace startu pro plynulost
+        startTouches[t.id] = { x: t.pos.x, y: t.pos.y };
     });
 
-    onTouchEnd((pos, t) => {
+    // 3. Konec dotyku
+    onTouchEnd((p, t) => {
         if (startTouches[t.id]) {
             const stredSkla = window.innerWidth / 2;
             if (startTouches[t.id].x < stredSkla) {
@@ -283,6 +289,7 @@ scene("game", () => {
             delete startTouches[t.id];
         }
     });
+
 
     // Pozadí s náhodnou trávou
     for (let y = 0; y < 19; y++) {
