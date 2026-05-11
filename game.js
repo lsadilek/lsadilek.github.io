@@ -1,9 +1,10 @@
 kaboom({
     width: 800,
     height: 600,
-    letterbox: true, // Klíčové pro správné zobrazení na všech displejích
+    letterbox: true,   // PŘIDÁNO: Udrží poměr stran a černé pruhy místo deformace
     background: [0, 0, 0],
     scale: 1,
+    touchToMouse: true, 
     global: true,
 });
 
@@ -246,30 +247,31 @@ scene("game", () => {
     let touchMoveDir = { p1: vec2(0,0), p2: vec2(0,0) };
 
     // Snímání dotyků
-    onTouchStart((p, t) => { 
-        startTouches[t.id] = p; 
+    onTouchStart((pos, t) => { 
+        startTouches[t.id] = pos; 
     });
 
-    onTouchMove((p, t) => {
+    onTouchMove((pos, t) => {
         const start = startTouches[t.id];
         if (!start) return;
+        const delta = pos.sub(start);
 
-        const delta = p.sub(start);
         if (delta.len() > 2) {
-            // Dělíme podle šířky hry (800 / 2 = 400)
-            if (start.x < 400) {
+            const stredHry = width() / 2; // Polovina z 800px
+            if (start.x < stredHry) {
                 touchMoveDir.p1 = delta.unit();
             } else {
                 touchMoveDir.p2 = delta.unit();
             }
         }
-        startTouches[t.id] = p;
+        startTouches[t.id] = pos;
     });
 
-    onTouchEnd((p, t) => {
-        if (startTouches[t.id]) {
-            const startX = startTouches[t.id].x;
-            if (startX < 400) {
+    onTouchEnd((pos, t) => {
+        const start = startTouches[t.id];
+        if (start) {
+            const stredHry = width() / 2; // Sjednoceno na width()
+            if (start.x < stredHry) {
                 touchMoveDir.p1 = vec2(0,0);
             } else {
                 touchMoveDir.p2 = vec2(0,0);
@@ -277,6 +279,7 @@ scene("game", () => {
             delete startTouches[t.id];
         }
     });
+
 
     // Pozadí s náhodnou trávou
     for (let y = 0; y < 19; y++) {

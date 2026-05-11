@@ -1,52 +1,53 @@
 <!DOCTYPE html>
 <html lang="cs">
 <head>
-    <!-- Správné nastavení pro mobily, aby se obraz nehýbal -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta charset="utf-8">
     <title>Kdo nasbírá víc hub – JS verze</title>
     <style>
+        /* Sjednocené body: fixuje obrazovku na mobilu proti posunu */
         html, body {
             margin: 0;
             padding: 0;
             width: 100%;
             height: 100%;
-            overflow: hidden; /* Zákaz scrollování stránky */
-            background-color: #000; /* Černé okolí hry */
+            overflow: hidden;
+            background-color: #121212; 
             display: flex;
             justify-content: center;
             align-items: center;
-            position: fixed; /* Fixuje stránku proti posunu prstem */
+            position: fixed;
+            touch-action: none; /* Zákaz gest prohlížeče */
         }
 
         canvas {
+            font-family: 'Arial', sans-serif;
             display: block;
-            touch-action: none; /* Klíčové: zakáže gesta prohlížeče na hře */
-            user-select: none;
-            -webkit-user-select: none;
-
-            /* TVŮJ OKRASNÝ RÁMEČEK (Zpět a opraven pro PC) */
-            border: 8px solid #444;           
-            outline: 4px solid #000;          
-            box-shadow: 
-                0 0 0 12px #333,              
-                0 20px 50px rgba(0,0,0,0.9);
-
-            /* Responzivita: na PC bude mít 800x600 (díky Kaboom letterboxu), 
-               na mobilu se plynule zmenší, aby byla vidět CELÁ plocha */
-            max-width: 100%;
-            max-height: 100%;
+            
+            /* Responsivita: udrží poměr stran a vejde se na displej */
+            max-width: 100vw;
+            max-height: 100vh;
             object-fit: contain;
+            
+            /* Zákaz scrollování a výběru textu přímo na hře */
+            touch-action: none;
+            -webkit-touch-callout: none;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+
+            /* OKRASNÝ RÁMEČEK */
+            border: 8px solid #444;
+            outline: 4px solid #000;
+            box-shadow: 
+                0 0 0 12px #333,
+                0 20px 50px rgba(0,0,0,0.9);
         }
     </style>
 </head>
 <body>
-    <!-- TADY BYL TEN CHYBĚJÍCÍ ODKAZ NA KABOOM -->
+    <!-- Správný odkaz na engine Kaboom -->
     <script src="https://unpkg.com/kaboom@3000.0.0/dist/kaboom.js"></script>
-    
     <!-- Tvůj herní kód -->
     <script src="game.js"></script>
 </body>
 </html>
-
-
