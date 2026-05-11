@@ -1,18 +1,13 @@
+// ZÁKAZY SCROLLOVÁNÍ (Musí být samostatně, ne v kaboom)
+window.addEventListener("touchstart", (e) => {
+    if (e.target.tagName === "CANVAS") e.preventDefault();
+}, { passive: false });
+
+window.addEventListener("touchmove", (e) => {
+    if (e.target.tagName === "CANVAS") e.preventDefault();
+}, { passive: false });
+
 kaboom({
-
-    // Zákaz scrollování při dotyku (pro mobilní prohlížeče)
-    window.addEventListener("touchstart", (e) => {
-        if (e.target.tagName === "CANVAS") {
-            e.preventDefault();
-        }
-    }, { passive: false });
-
-    window.addEventListener("touchmove", (e) => {
-        if (e.target.tagName === "CANVAS") {
-            e.preventDefault();
-        }
-    }, { passive: false });
-
     width: 800,
     height: 600,
     background: [0, 0, 0],
