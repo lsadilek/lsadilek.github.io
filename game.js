@@ -12,7 +12,7 @@ kaboom({
     height: 600,
     background: [0, 0, 0],
     scale: 1,
-    touchToMouse: false, // Přidáno pro čistý dotykový vstup
+    touchToMouse: true, // Změněno zpět na true
     global: true,
 });
 
@@ -235,14 +235,13 @@ scene("start", () => {
     ]); 
     // Funkce pro spuštění hry
     function begin() {
-        // Tím, že při kliknutí zavoláme play(), prohlížeč povolí zvuk pro celou hru
-        // Pustíme zvuk "pickup" s nulovou hlasitostí jako klíč k odemknutí
         play("pickup", { volume: 0 }); 
         go("game");
     }
 
     onMousePress(begin);
     onKeyPress(begin);
+    onTouchStart(begin); // PŘIDÁNO: Spustí hru i po dotyku na mobilu
 });
 
 
