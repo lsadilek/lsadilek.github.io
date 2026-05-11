@@ -239,43 +239,59 @@ scene("start", () => {
 // ---------------------------------------------------------
 // Scéna hry
 // ---------------------------------------------------------
-scene("game", () => {
-    let startTouches = {};
-    let touchMoveDir = { p1: vec2(0,0), p2: vec2(0,0) };
+// --- DOTYKOVÉ OVLÁDÁNÍ ---
+// Každý dotyk má vlastní záznam:
+// touches[id] = { player: "p1" | "p2", start: vec2 }
+// --- DOTYKOVÉ OVLÁDÁNÍ ---
+// Každý dotyk má vlastní záznam:
+// touches[id] = { player: "p1" | "p2", start: vec2 }
+let touches = {};
+let touchMoveDir = { p1: vec2(0,0), p2: vec2(0,0) };
 
-    // Snímání dotyků
-    onTouchStart((pos, t) => { 
-        startTouches[t.id] = pos; 
-    });
+onTouchStart((pos, t) => {
+    const mid = width() / 2;
 
-    onTouchMove((pos, t) => {
-        const start = startTouches[t.id];
-        if (!start) return;
-        const delta = pos.sub(start);
+    // Určíme, kterému hráči dotyk patří
+    touches[t.id] = {
+        player: pos.x < mid ? "p1" : "p2",
+        start: pos.clone()
+    };
+});
 
-        if (delta.len() > 2) {
-            const stredHry = width() / 2; // Polovina z 800px
-            if (start.x < stredHry) {
-                touchMoveDir.p1 = delta.unit();
-            } else {
-                touchMoveDir.p2 = delta.unit();
-            }
+onTouchMove((pos, t) => {
+    const info = touches[t.id];
+    if (!info) return;
+
+    const delta = pos.sub(info.start);
+
+    // Pokud je pohyb dostatečně velký, nastavíme směr
+    if (delta.len() > 4) {
+        if (info.player === "p1") {
+            touchMoveDir.p1 = delta.unit();
+        } else {
+            touchMoveDir.p2 = delta.unit();
         }
-        startTouches[t.id] = pos;
-    });
+    }
 
-    onTouchEnd((pos, t) => {
-        const start = startTouches[t.id];
-        if (start) {
-            const stredHry = width() / 2; // Sjednoceno na width()
-            if (start.x < stredHry) {
-                touchMoveDir.p1 = vec2(0,0);
-            } else {
-                touchMoveDir.p2 = vec2(0,0);
-            }
-            delete startTouches[t.id];
-        }
-    });
+    // Aktualizujeme start pro další krok
+    info.start = pos.clone();
+});
+
+onTouchEnd((pos, t) => {
+    const info = touches[t.id];
+    if (!info) return;
+
+    // Dotyk skončil → hráč se zastaví
+    if (info.player === "p1") {
+        touchMoveDir.p1 = vec2(0, 0);
+    } else {
+        touchMoveDir.p2 = vec2(0, 0);
+    }
+
+    delete touches[t.id];
+});
+
+
 
 
     // Pozadí s náhodnou trávou
