@@ -4,6 +4,7 @@ kaboom({
     background: [0, 0, 0],
     scale: 1,
     global: true,
+    letterbox: true, 
 });
 
 // ---------------------------------------------------------
