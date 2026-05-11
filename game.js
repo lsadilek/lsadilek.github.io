@@ -246,33 +246,30 @@ scene("game", () => {
     let touchMoveDir = { p1: vec2(0,0), p2: vec2(0,0) };
 
     // Snímání dotyků
-    onTouchStart((pos, t) => { 
-        startTouches[t.id] = pos; 
+    onTouchStart((p, t) => { 
+        startTouches[t.id] = p; 
     });
 
-    onTouchMove((pos, t) => {
+    onTouchMove((p, t) => {
         const start = startTouches[t.id];
         if (!start) return;
 
-        const delta = pos.sub(start);
+        const delta = p.sub(start);
         if (delta.len() > 2) {
-            const stredHry = width() / 2;
-            if (start.x < stredHry) {
+            // Dělíme podle šířky hry (800 / 2 = 400)
+            if (start.x < 400) {
                 touchMoveDir.p1 = delta.unit();
             } else {
                 touchMoveDir.p2 = delta.unit();
             }
         }
-        startTouches[t.id] = pos;
+        startTouches[t.id] = p;
     });
 
-    onTouchEnd((pos, t) => {
-        // Kontrola, zda t.id existuje, zabrání chybě TypeError
+    onTouchEnd((p, t) => {
         if (startTouches[t.id]) {
-            const stredHry = width() / 2;
             const startX = startTouches[t.id].x;
-            
-            if (startX < stredHry) {
+            if (startX < 400) {
                 touchMoveDir.p1 = vec2(0,0);
             } else {
                 touchMoveDir.p2 = vec2(0,0);
