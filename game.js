@@ -1,10 +1,8 @@
 kaboom({
     width: 800,
     height: 600,
-    letterbox: true,   // PŘIDÁNO: Udrží poměr stran a černé pruhy místo deformace
     background: [0, 0, 0],
     scale: 1,
-    touchToMouse: true, 
     global: true,
 });
 
