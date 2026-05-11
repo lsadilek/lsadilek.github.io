@@ -247,30 +247,38 @@ scene("game", () => {
 
     // Snímání dotyků
     onTouchStart((pos, t) => { 
-        startTouches[t.id] = pos; 
+        // Uložíme si herní pozici (pos) pro výpočet směru,
+        // ale přidáme i t.pos.x (fyzický dotyk) pro určení strany
+        startTouches[t.id] = { gamePos: pos, screenX: t.pos.x }; 
     });
 
     onTouchMove((pos, t) => {
-        const start = startTouches[t.id];
-        if (!start) return;
-        const delta = pos.sub(start);
+        const startData = startTouches[t.id];
+        if (!startData) return;
+
+        // Výpočet směru pohybu (delta) v herních souřadnicích
+        const delta = pos.sub(startData.gamePos);
 
         if (delta.len() > 2) {
-            const stredHry = width() / 2; // Polovina z 800px
-            if (start.x < stredHry) {
+            // Rozhodujeme podle toho, kde na SKLE mobilu prst začal
+            const stredDispleje = window.innerWidth / 2;
+            
+            if (startData.screenX < stredDispleje) {
                 touchMoveDir.p1 = delta.unit();
             } else {
                 touchMoveDir.p2 = delta.unit();
             }
         }
-        startTouches[t.id] = pos;
+        // Aktualizujeme herní pozici pro plynulý swipe
+        startData.gamePos = pos;
     });
 
     onTouchEnd((pos, t) => {
-        const start = startTouches[t.id];
-        if (start) {
-            const stredHry = width() / 2; // Sjednoceno na width()
-            if (start.x < stredHry) {
+        const startData = startTouches[t.id];
+        if (startData) {
+            const stredDispleje = window.innerWidth / 2;
+            // Zastavíme hráče podle toho, na které straně prst začal
+            if (startData.screenX < stredDispleje) {
                 touchMoveDir.p1 = vec2(0,0);
             } else {
                 touchMoveDir.p2 = vec2(0,0);
