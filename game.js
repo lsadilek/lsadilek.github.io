@@ -5,6 +5,8 @@ kaboom({
     background: [0, 0, 0],
 });
 
+let touchMoveDir = { p1: vec2(0,0), p2: vec2(0,0) };
+
 // ---------------------------------------------------------
 // Assety
 // ---------------------------------------------------------
@@ -239,59 +241,63 @@ scene("start", () => {
 // ---------------------------------------------------------
 // Scéna hry
 // ---------------------------------------------------------
-// --- DOTYKOVÉ OVLÁDÁNÍ ---
-// Každý dotyk má vlastní záznam:
-// touches[id] = { player: "p1" | "p2", start: vec2 }
-// --- DOTYKOVÉ OVLÁDÁNÍ ---
-// Každý dotyk má vlastní záznam:
-// touches[id] = { player: "p1" | "p2", start: vec2 }
-let touches = {};
-let touchMoveDir = { p1: vec2(0,0), p2: vec2(0,0) };
 
-onTouchStart((pos, t) => {
-    const mid = width() / 2;
+scene("game", () => {
 
-    // Určíme, kterému hráči dotyk patří
-    touches[t.id] = {
-        player: pos.x < mid ? "p1" : "p2",
-        start: pos.clone()
-    };
-});
+    // --- DOTYKOVÉ OVLÁDÁNÍ S PŘEPOČTEM NA 800×600 ---
+    let touches = {};
 
-onTouchMove((pos, t) => {
-    const info = touches[t.id];
-    if (!info) return;
+    function toCanvasPos(screenPos) {
+        const rect = document.getElementById("game").getBoundingClientRect();
+        const scaleX = 800 / rect.width;
+        const scaleY = 600 / rect.height;
 
-    const delta = pos.sub(info.start);
+        return vec2(
+            (screenPos.x - rect.left) * scaleX,
+            (screenPos.y - rect.top) * scaleY
+        );
+    }
 
-    // Pokud je pohyb dostatečně velký, nastavíme směr
-    if (delta.len() > 4) {
-        if (info.player === "p1") {
-            touchMoveDir.p1 = delta.unit();
-        } else {
-            touchMoveDir.p2 = delta.unit();
+    onTouchStart((pos, t) => {
+        const p = toCanvasPos(pos);
+        const mid = 800 / 2;
+
+        touches[t.id] = {
+            player: p.x < mid ? "p1" : "p2",
+            start: p.clone()
+        };
+    });
+
+    onTouchMove((pos, t) => {
+        const info = touches[t.id];
+        if (!info) return;
+
+        const p = toCanvasPos(pos);
+        const delta = p.sub(info.start);
+
+        if (delta.len() > 4) {
+            if (info.player === "p1") {
+                touchMoveDir.p1 = delta.unit();
+            } else {
+                touchMoveDir.p2 = delta.unit();
+            }
         }
-    }
 
-    // Aktualizujeme start pro další krok
-    info.start = pos.clone();
-});
+        info.start = p.clone();
+    });
 
-onTouchEnd((pos, t) => {
-    const info = touches[t.id];
-    if (!info) return;
+    onTouchEnd((pos, t) => {
+        const info = touches[t.id];
+        if (!info) return;
 
-    // Dotyk skončil → hráč se zastaví
-    if (info.player === "p1") {
-        touchMoveDir.p1 = vec2(0, 0);
-    } else {
-        touchMoveDir.p2 = vec2(0, 0);
-    }
+        if (info.player === "p1") {
+            touchMoveDir.p1 = vec2(0, 0);
+        } else {
+            touchMoveDir.p2 = vec2(0, 0);
+        }
 
-    delete touches[t.id];
-});
-
-
+        delete touches[t.id];
+    });
 
 
     // Pozadí s náhodnou trávou
