@@ -1,10 +1,10 @@
+});
 kaboom({
     width: 800,
     height: 600,
-    letterbox: true,      // Zmenší hru tak, aby byla vidět celá
+    letterbox: true, 
     background: [0, 0, 0],
     scale: 1,
-    touchToMouse: true,   // Vrátíme pro lepší kompatibilitu
     global: true,
 });
 
@@ -271,10 +271,12 @@ scene("game", () => {
     });
 
     onTouchEnd((pos, t) => {
-        const start = startTouches[t.id];
-        if (start) {
+        if (startTouches[t.id]) {
             const stredObrazovky = window.innerWidth / 2;
-            if (t.pos.x < stredObrazovky) {
+            // Použijeme t.pos pouze pokud existuje, jinak pos
+            const currentX = t.pos ? t.pos.x : pos.x;
+            
+            if (currentX < stredObrazovky) {
                 touchMoveDir.p1 = vec2(0,0);
             } else {
                 touchMoveDir.p2 = vec2(0,0);
@@ -282,7 +284,6 @@ scene("game", () => {
             delete startTouches[t.id];
         }
     });
-
     // Pozadí s náhodnou trávou
     for (let y = 0; y < 19; y++) {
         for (let x = 0; x < 25; x++) {
@@ -718,7 +719,11 @@ scene("game", () => {
 
 // --- SCÉNA CEREMONY ---
 scene("ceremony", ({ s1, s2 }) => {
-    add([rect(width(), height()), color(0, 0, 0)]);
+    // Černé pozadí přes celou plochu
+    add([
+        rect(width(), height()), 
+        color(0, 0, 0)
+    ]);
     
     let txt = "";
     let img = "vitez1"; 
@@ -734,6 +739,7 @@ scene("ceremony", ({ s1, s2 }) => {
         img = "vitez3"; 
     }
     
+    // Obrázek vítěze
     add([
         sprite(img), 
         pos(width()/2, height()/2), 
@@ -741,6 +747,7 @@ scene("ceremony", ({ s1, s2 }) => {
         z(10) 
     ]);
     
+    // Text se skóre
     add([
         text(`${txt}\nSkóre:\nJakub: ${s1}\nEliška: ${s2}`, { 
             size: 32, 
@@ -752,16 +759,18 @@ scene("ceremony", ({ s1, s2 }) => {
         z(20)
     ]);
     
+    // Tlačítko - obdélník
     const btn = add([
         rect(300, 60, { radius: 8 }), 
         pos(width()/2, 520), 
         color(80, 80, 80), 
-        area(), 
+        area(), // Důležité pro klikání
         anchor("center"), 
         z(20), 
         "button"
     ]);
     
+    // Text na tlačítku
     add([
         text("Nová hra", { size: 24, font: "sans-serif" }), 
         pos(width()/2, 520), 
@@ -769,25 +778,22 @@ scene("ceremony", ({ s1, s2 }) => {
         z(21)
     ]);
 
-    btn.onClick(() => go("game"));
-    
-    // DOPLNĚK: Reakce na dotyk pro mobil
-    onTouchStart((pos) => {
-        if (btn.hasPoint(pos)) {
-            go("game");
-        }
+    // Stačí toto jedno volání - funguje na myš i dotyk
+    btn.onClick(() => {
+        go("game");
     });
 
+    // Funkce pro ohňostroj (definovaná jen jednou)
     function spawnRandomFirework() {
         fireworkExplosion(rand(100, 700), rand(100, 250));
         play("firework", { volume: 0.2 });
-        wait(rand(0.2, 1), spawnRandomFirework);
-    }    
-
-    function spawnRandomFirework() {
-        fireworkExplosion(rand(100, 700), rand(100, 250));
-        play("firework", { volume: 0.2 });
-        wait(rand(0.2, 1), spawnRandomFirework);
+        // Počkáme náhodnou dobu a spustíme další ohňostroj
+        wait(rand(0.5, 1.5), () => {
+            // Kontrola, zda jsme stále ve scéně ceremony
+            if (get("button").length > 0) {
+                spawnRandomFirework();
+            }
+        });
     }
 
     spawnRandomFirework();
@@ -795,3 +801,4 @@ scene("ceremony", ({ s1, s2 }) => {
 
 // Spuštění hry
 go("start");
+
