@@ -295,16 +295,20 @@ scene("start", () => {
 
             onTouchEnd((pos, t) => {
                 const info = touches[t.id];
-                if (!info) return;
+                if (info) {
+                    if (info.player === "p1") touchMoveDir.p1 = vec2(0, 0);
+                    else touchMoveDir.p2 = vec2(0, 0);
+                    delete touches[t.id];
+                }
 
-                if (info.player === "p1") touchMoveDir.p1 = vec2(0, 0);
-                else touchMoveDir.p2 = vec2(0, 0);
-
-                delete touches[t.id];
+                // 🔥 Pokud už není žádný dotyk → oba hráči STOP
+                if (Object.keys(touches).length === 0) {
+                    touchMoveDir.p1 = vec2(0, 0);
+                    touchMoveDir.p2 = vec2(0, 0);
+                }
             });
           }
-          
-          
+         
      // Pozadí s náhodnou trávou
     for (let y = 0; y < 19; y++) {
         for (let x = 0; x < 25; x++) {
