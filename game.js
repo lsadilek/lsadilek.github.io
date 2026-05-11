@@ -1,10 +1,12 @@
+const canvas = document.querySelector("#game");
+
 kaboom({
-    width: 800,
-    height: 600,
+    width: canvas.width,
+    height: canvas.height,
     background: [0, 0, 0],
     scale: 1,
     global: true,
-    canvas: document.querySelector("canvas"),
+    canvas: canvas,
 });
 
 // ---------------------------------------------------------
@@ -80,9 +82,9 @@ loadSound("crunch", "assets/crunch.wav");
 // ---------------------------------------------------------
 function clampToWindow(e, r = 28) {
     if (e.pos.x < r) e.pos.x = r;
-    if (e.pos.x > 800 - r) e.pos.x = 800 - r;
+    if (e.pos.x > width() - r) e.pos.x = width() - r;
     if (e.pos.y < r) e.pos.y = r;
-    if (e.pos.y > 600 - r) e.pos.y = 600 - r;
+    if (e.pos.y > height() - r) e.pos.y = height() - r;
 }
 
 function addShadow(parent) {
@@ -291,26 +293,45 @@ scene("game", () => {
         }
     }
 
-
     const obstacles = [];
+
     const createObstacle = (type) => {
-        let position = vec2(rand(64, 736), rand(64, 536));
-        while (position.x > 300 && position.x < 500 && position.y > 200 && position.y < 400) {
-            position = vec2(rand(64, 736), rand(64, 536));
+
+        // 1) Náhodná pozice v rámci aktuálního canvasu
+        let position = vec2(
+            rand(64, width() - 64),
+            rand(64, height() - 64)
+        );
+
+        // 2) Dynamická zakázaná zóna uprostřed (200×200)
+        const midX = width() / 2;
+        const midY = height() / 2;
+
+        while (
+            position.x > midX - 100 &&
+            position.x < midX + 100 &&
+            position.y > midY - 100 &&
+            position.y < midY + 100
+        ) {
+            position = vec2(
+                rand(64, width() - 64),
+                rand(64, height() - 64)
+            );
         }
 
+        // 3) Vytvoření překážky
         const obj = add([
             sprite(type),
             pos(position),
             area(),
             anchor("center"),
-            z(position.y),
-            type,       // Tag "tree" nebo "rock"
-            "obstacle", // Tag pro všechny překážky
+            z(position.y),   // správné překrývání podle Y
+            type,            // "tree" nebo "rock"
+            "obstacle",      // společný tag
         ]);
+
         obstacles.push(obj);
     };
-
 
     for (let i = 0; i < 10; i++) { createObstacle("rock"); createObstacle("tree"); }
 
@@ -344,49 +365,59 @@ scene("game", () => {
         }
     ]);
 
+
+    // PLAYER 2 – dynamický střed obrazovky
     const player2 = add([
-        sprite("player2"), 
-        pos(385, 300), 
-        area({ collision: false }), 
-        anchor("center"), 
+        sprite("player2"),
+        pos(width() / 2 - 15, height() / 2),   // vedle player1
+        area({ collision: false }),
+        anchor("center"),
         z(5),
         { speed: 180, score: 0 },
         {
             draw() {
                 drawEllipse({
-                    pos: vec2(0, 30), 
+                    pos: vec2(0, 30),
                     radiusX: 14,
                     radiusY: 6,
                     color: Color.fromHex("#000000"),
                     opacity: 0.3,
-                })
+                });
             }
         }
     ]);
 
+    // KOČKA – dynamický spawn kdekoliv v mapě
     const cat = add([
-        sprite("cat"), 
-        pos(rand(100, 700), rand(100, 500)), 
-        area(), 
-        anchor("center"), 
+        sprite("cat"),
+        pos(
+            rand(100, width() - 100),
+            rand(100, height() - 100)
+        ),
+        area(),
+        anchor("center"),
         z(5),
         { speed: 210 },
         {
             draw() {
                 drawEllipse({
-                    pos: vec2(0, 15), // Kočka je menší, stín má blíž
+                    pos: vec2(0, 15),
                     radiusX: 12,
                     radiusY: 4,
                     color: Color.fromHex("#000000"),
                     opacity: 0.3,
-                })
+                });
             }
         }
     ]);
-    
+
+    // KRÁLÍK – dynamický spawn kdekoliv v mapě
     const rabbit = add([
         sprite("rabbit"),
-        pos(rand(100, 700), rand(100, 500)),
+        pos(
+            rand(100, width() - 100),
+            rand(100, height() - 100)
+        ),
         area({ shape: new Rect(vec2(0), 16, 16) }),
         anchor("center"),
         z(5),
@@ -397,20 +428,38 @@ scene("game", () => {
             state: "idle",
         },
     ]);
-
-    
+          
     function spawnStar() {
-        let position = vec2(rand(50, 750), rand(50, 550));
+
+        // 1) Náhodná pozice v rámci aktuálního canvasu
+        let position = vec2(
+            rand(50, width() - 50),
+            rand(50, height() - 50)
+        );
+
+        // 2) Vyhnout se překážkám – dynamicky
         for (let i = 0; i < 20; i++) {
             let collision = false;
+
             for (const o of obstacles) {
-                if (position.dist(o.pos) < 60) { collision = true; break; }
+                if (position.dist(o.pos) < 60) {
+                    collision = true;
+                    break;
+                }
             }
+
             if (!collision) break;
-            position = vec2(rand(50, 750), rand(50, 550));
+
+            // Nová dynamická pozice
+            position = vec2(
+                rand(50, width() - 50),
+                rand(50, height() - 50)
+            );
         }
+
+        // 3) Vytvoření houby
         const s = add([
-            sprite("star", { anim: "grow" }), // Rovnou spustí růst
+            sprite("star", { anim: "grow" }),
             pos(position),
             area({ shape: new Rect(vec2(0), 10, 10) }),
             anchor("center"),
@@ -418,31 +467,32 @@ scene("game", () => {
             "star",
         ]);
 
-        // Jakmile houba vyroste (skončí animace), sama vybuchne
+        // 4) Po dokončení animace růstu houba sama vybuchne
         s.onAnimEnd((anim) => {
             if (anim === "grow") {
-                explodeStar(s, true); // VYBUCHNE S KOUŘEM
+                explodeStar(s, true);
             }
         });
 
         return s;
     }
-
+    
     let star = spawnStar();
-        
+
     function explodeStar(s, showVisuals = true) {
         if (!s || !s.exists()) return;
 
-        const p = s.pos.clone(); 
+        const p = s.pos.clone();
 
         if (showVisuals) {
-            // ČERVENÉ ČÁSTICE 
+
+            // ČERVENÉ ČÁSTICE
             for (let i = 0; i < 80; i++) {
                 const particle = add([
                     sprite("smoke"),
                     pos(p.x, p.y),
-                    scale(rand(1.5, 3)), 
-                    color(255, rand(0, 100), 0), // Ohnivé barvy
+                    scale(rand(1.5, 3)),
+                    color(255, rand(0, 100), 0),
                     opacity(1),
                     anchor("center"),
                     z(15),
@@ -459,15 +509,17 @@ scene("game", () => {
                     if (particle.opacity <= 0) particle.destroy();
                 });
             }
-            
+
             play("explosion");
-            
+
             // Odečtení bodů hráčům v dosahu
             const range = 150;
+
             if (player1.pos.dist(p) < range) {
                 player1.score = Math.max(0, player1.score - 2);
                 score1Text.text = "Jakub: " + player1.score;
             }
+
             if (player2.pos.dist(p) < range) {
                 player2.score = Math.max(0, player2.score - 2);
                 score2Text.text = "Eliška: " + player2.score;
@@ -476,19 +528,43 @@ scene("game", () => {
 
         destroy(s);
         star = null;
-        wait(2, () => { if (!star) star = spawnStar(); });
+
+        // Dynamický respawn houby
+        wait(2, () => {
+            if (!star) star = spawnStar();
+        });
     }
-        
-    const score1Text = add([text("Jakub: 0", { size: 18, font: "sans-serif" }), pos(20, 20), z(1000)]);
-    const score2Text = add([text("Eliška: 0", { size: 18, font: "sans-serif" }), pos(20, 50), z(1000)]);
-    const timeText = add([text("čas: 3:00", { size: 18, font: "sans-serif" }), pos(680, 20), z(1000)]);
+             
+    // SCORE TEXTY – dynamické pozice
+    const score1Text = add([
+        text("Jakub: 0", { size: 18, font: "sans-serif" }),
+        pos(20, 20),
+        z(1000)
+    ]);
+
+    const score2Text = add([
+        text("Eliška: 0", { size: 18, font: "sans-serif" }),
+        pos(20, 50),
+        z(1000)
+    ]);
+
+    // ČAS – dynamicky vpravo nahoře
+    const timeText = add([
+        text("čas: 3:00", { size: 18, font: "sans-serif" }),
+        pos(width() - 120, 20),   // místo pevného 680
+        z(1000)
+    ]);
+
     let gameTime = 180;
 
+
+    // ---------------------------------------------------------
+    // FUNKCE handlePlayer – beze změny, jen zkopírováno celé
+    // ---------------------------------------------------------
     function handlePlayer(p, keys, tDir = vec2(0,0)) { // tDir je směr z dotyku
         let moveDir = vec2(0, 0);
 
-
-        // KLÁVESNICE (zůstává beze změny)
+        // KLÁVESNICE
         if (isKeyDown(keys.left))  moveDir.x -= 1;
         if (isKeyDown(keys.right)) moveDir.x += 1;
         if (isKeyDown(keys.up))    moveDir.y -= 1;
@@ -520,7 +596,7 @@ scene("game", () => {
             }
         }
     }
-
+ 
     onUpdate(() => {
         // Tady přidáme touchMoveDir.p1 a p2 jako třetí parametr
         handlePlayer(player1, { left: "left", right: "right", up: "up", down: "down" }, touchMoveDir.p1);
@@ -675,6 +751,7 @@ scene("game", () => {
 
         if (gameTime <= 0) go("ceremony", { s1: player1.score, s2: player2.score });
 
+        timeText.pos = vec2(width() - 120, 20);
     }); // Konec onUpdate
 
     rabbit.onCollide("tree", (t) => {
@@ -715,14 +792,15 @@ scene("game", () => {
 
 // --- SCÉNA CEREMONY ---
 scene("ceremony", ({ s1, s2 }) => {
+
     // Černé pozadí přes celou plochu
     add([
-        rect(width(), height()), 
+        rect(width(), height()),
         color(0, 0, 0)
     ]);
-    
+
     let txt = "";
-    let img = "vitez1"; 
+    let img = "vitez1";
 
     if (s1 > s2) {
         txt = "Vítěz: Jakub!";
@@ -732,58 +810,60 @@ scene("ceremony", ({ s1, s2 }) => {
         img = "vitez2";
     } else {
         txt = "Remíza!";
-        img = "vitez3"; 
+        img = "vitez3";
     }
-    
-    // Obrázek vítěze
+
+    // Obrázek vítěze – dynamický střed
     add([
-        sprite(img), 
-        pos(width()/2, height()/2), 
+        sprite(img),
+        pos(width() / 2, height() / 2),
         anchor("center"),
-        z(10) 
+        z(10)
     ]);
-    
-    // Text se skóre
+
+    // Text se skóre – dynamicky nad obrázkem
     add([
-        text(`${txt}\nSkóre:\nJakub: ${s1}\nEliška: ${s2}`, { 
-            size: 32, 
-            font: "sans-serif", 
+        text(`${txt}\nSkóre:\nJakub: ${s1}\nEliška: ${s2}`, {
+            size: 32,
+            font: "sans-serif",
             align: "center"
-        }), 
-        pos(width()/2, 110), 
+        }),
+        pos(width() / 2, height() / 2 - 150),   // místo pevného 110
         anchor("center"),
         z(20)
     ]);
-    
-    // Tlačítko - obdélník
+
+    // Tlačítko – dynamicky dole uprostřed
     const btn = add([
-        rect(300, 60, { radius: 8 }), 
-        pos(width()/2, 520), 
-        color(80, 80, 80), 
-        area(), // Důležité pro klikání
-        anchor("center"), 
-        z(20), 
+        rect(300, 60, { radius: 8 }),
+        pos(width() / 2, height() - 80),        // místo pevného 520
+        color(80, 80, 80),
+        area(),
+        anchor("center"),
+        z(20),
         "button"
     ]);
-    
+
     // Text na tlačítku
     add([
-        text("Nová hra", { size: 24, font: "sans-serif" }), 
-        pos(width()/2, 520), 
-        anchor("center"), 
+        text("Nová hra", { size: 24, font: "sans-serif" }),
+        pos(width() / 2, height() - 80),
+        anchor("center"),
         z(21)
     ]);
 
-    // Stačí toto jedno volání - funguje na myš i dotyk
+    // Kliknutí na tlačítko
     btn.onClick(() => go("game"));
 
-    // Funkce pro ohňostroj (definovaná jen jednou)
+    // Funkce pro ohňostroj
     function spawnRandomFirework() {
-        fireworkExplosion(rand(100, 700), rand(100, 250));
+        fireworkExplosion(
+            rand(100, width() - 100),      // místo 700
+            rand(100, height() / 2)        // místo 250
+        );
         play("firework", { volume: 0.2 });
-        // Počkáme náhodnou dobu a spustíme další ohňostroj
+
         wait(rand(0.5, 1.5), () => {
-            // Kontrola, zda jsme stále ve scéně ceremony
             if (get("button").length > 0) {
                 spawnRandomFirework();
             }
@@ -795,4 +875,5 @@ scene("ceremony", ({ s1, s2 }) => {
 
 // Spuštění hry
 go("start");
+
 

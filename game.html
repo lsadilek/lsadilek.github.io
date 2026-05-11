@@ -8,7 +8,6 @@
     <title>Kdo nasbírá víc hub – JS verze</title>
 
     <style>
-        /* Celá stránka – fix proti posunu */
         html, body {
             margin: 0;
             padding: 0;
@@ -24,18 +23,11 @@
             touch-action: none;
         }
 
-        /* Kontejner držící přesný poměr stran */
         #game-container {
-            width: 100vw;
-            max-width: 800px;
-            aspect-ratio: 800 / 600;
             position: relative;
         }
 
-        /* Canvas přesně vyplní kontejner */
-        #game-container canvas {
-            width: 100%;
-            height: 100%;
+        #game {
             display: block;
             touch-action: none;
             user-select: none;
@@ -53,8 +45,50 @@
     <!-- Kaboom -->
     <script src="https://unpkg.com/kaboom@3000.0.0/dist/kaboom.js"></script>
 
+    <!-- Dynamické přizpůsobení canvasu -->
+    <script>
+        const canvas = document.getElementById("game");
+        const container = document.getElementById("game-container");
+
+        function resizeCanvas() {
+            const isPC = window.innerWidth > 900;
+
+            if (isPC) {
+                canvas.width = 800;
+                canvas.height = 600;
+                container.style.width = "800px";
+                container.style.height = "600px";
+                return;
+            }
+
+            const w = window.innerWidth;
+            const h = window.innerHeight;
+            const aspect = 4 / 3;
+            let newW, newH;
+
+            if (w < h) {
+                newW = w;
+                newH = w / aspect;
+            } else {
+                newH = h;
+                newW = h * aspect;
+            }
+
+            canvas.width = newW;
+            canvas.height = newH;
+            container.style.width = newW + "px";
+            container.style.height = newH + "px";
+        }
+
+        window.addEventListener("resize", resizeCanvas);
+        window.addEventListener("orientationchange", resizeCanvas);
+        resizeCanvas();
+    </script>
+
     <!-- Tvoje hra -->
     <script src="game.js"></script>
 
 </body>
 </html>
+
+
