@@ -302,7 +302,9 @@ scene("start", () => {
 
                 delete touches[t.id];
             });
- 
+          }
+          
+          
      // Pozadí s náhodnou trávou
     for (let y = 0; y < 19; y++) {
         for (let x = 0; x < 25; x++) {
