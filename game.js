@@ -1,5 +1,3 @@
-const canvas = document.querySelector("#game");
-
 kaboom({
     canvas: canvas,
     background: [0, 0, 0],
