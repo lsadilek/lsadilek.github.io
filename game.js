@@ -246,6 +246,9 @@ scene("start", () => {
 
       // --- DOKONALÉ DOTYKOVÉ OVLÁDÁNÍ PRO 2 HRÁČE ---
       let touchesNow = {};
+      let fingerP1 = null;
+      let fingerP2 = null;
+
 
       function toCanvasPos(screenPos) {
           const rect = document.getElementById("game").getBoundingClientRect();
@@ -258,7 +261,20 @@ scene("start", () => {
       }
 
       onTouchStart((pos, t) => {
-          touchesNow[t.id] = toCanvasPos(pos);
+          const p = toCanvasPos(pos);
+          touchesNow[t.id] = p;
+
+          const mid = width() / 2;
+
+          // Hráč 1 – levá půlka
+          if (p.x < mid && fingerP1 === null) {
+              fingerP1 = t.id;
+          }
+
+          // Hráč 2 – pravá půlka
+          if (p.x >= mid && fingerP2 === null) {
+              fingerP2 = t.id;
+          }
       });
 
       onTouchMove((pos, t) => {
@@ -267,6 +283,16 @@ scene("start", () => {
 
       onTouchEnd((pos, t) => {
           delete touchesNow[t.id];
+
+          if (t.id === fingerP1) {
+              fingerP1 = null;
+              touchMoveDir.p1 = vec2(0, 0);
+          }
+
+          if (t.id === fingerP2) {
+              fingerP2 = null;
+              touchMoveDir.p2 = vec2(0, 0);
+          }
       });
                  
            // Pozadí s náhodnou trávou
@@ -589,28 +615,39 @@ scene("start", () => {
         touchMoveDir.p2 = vec2(0, 0);
 
         const mid = width() / 2;
-
-        // „střed joysticku“ pro každého hráče
         const centerP1 = vec2(width() / 4, height() / 2);
         const centerP2 = vec2(3 * width() / 4, height() / 2);
 
-        for (const id in touchesNow) {
-            const p = touchesNow[id];
+        // Hráč 1
+        if (fingerP1 !== null) {
+            const p = touchesNow[fingerP1];
 
-            if (p.x < mid) {
-                // hráč 1 – levá půlka
+            // prst zmizel nebo přešel na pravou stranu
+            if (!p || p.x >= mid) {
+                fingerP1 = null;
+            } else {
                 const delta = p.sub(centerP1);
                 if (delta.len() > 10) {
                     touchMoveDir.p1 = delta.unit();
                 }
+            }
+        }
+
+        // Hráč 2
+        if (fingerP2 !== null) {
+            const p = touchesNow[fingerP2];
+
+            // prst zmizel nebo přešel na levou stranu
+            if (!p || p.x < mid) {
+                fingerP2 = null;
             } else {
-                // hráč 2 – pravá půlka
                 const delta = p.sub(centerP2);
                 if (delta.len() > 10) {
                     touchMoveDir.p2 = delta.unit();
                 }
             }
         }
+
        
         // Tady přidáme touchMoveDir.p1 a p2 jako třetí parametr
         handlePlayer(player1, { left: "left", right: "right", up: "up", down: "down" }, touchMoveDir.p1);
