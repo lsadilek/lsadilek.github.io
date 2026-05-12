@@ -575,7 +575,7 @@ scene("start", () => {
 
 
     // ---------------------------------------------------------
-    // FUNKCE handlePlayer – beze změny, jen zkopírováno celé
+    // FUNKCE handlePlayer
     // ---------------------------------------------------------
     function handlePlayer(p, keys, tDir = vec2(0,0)) { // tDir je směr z dotyku
         let moveDir = vec2(0, 0);
@@ -625,7 +625,6 @@ scene("start", () => {
                     const dist = p.dist(player1.pos);
                     if (dist > 10) { // Pokud je prst dál než 10px, panáček běží
                         const dir = p.sub(player1.pos).unit();
-                        player1.move(dir.scale(player1.speed));
                         touchMoveDir.p1 = dir; // Předáme směr pro animaci
                     }
                 }
@@ -638,7 +637,6 @@ scene("start", () => {
                     const dist = p.dist(player2.pos);
                     if (dist > 10) {
                         const dir = p.sub(player2.pos).unit();
-                        player2.move(dir.scale(player2.speed));
                         touchMoveDir.p2 = dir;
                     }
                 }
@@ -909,9 +907,12 @@ scene("ceremony", ({ s1, s2 }) => {
         anchor("center"),
         z(21)
     ]);
-
-    // Kliknutí na tlačítko
-    btn.onClick(() => go("game"));
+    
+    // Funkce pro znovuspuštění hry
+    function begin() {
+        play("pickup", { volume: 0 }); 
+        go("game");
+    }
 
     // Funkce pro ohňostroj
     function spawnRandomFirework() {
@@ -929,6 +930,12 @@ scene("ceremony", ({ s1, s2 }) => {
     }
 
     spawnRandomFirework();
+    
+    // Kombinované ovládání pro Novou hru
+    onMousePress(begin);
+    onKeyPress(begin);
+    onClick(begin); // Toto v Kaboom často funguje pro obojí (myš i dotyk)
+    onTouchStart(begin);
 });
 
 // Spuštění hry
