@@ -294,6 +294,7 @@ scene("start", () => {
               touchMoveDir.p2 = vec2(0, 0);
           }
       });
+
                  
            // Pozadí s náhodnou trávou
           for (let y = 0; y < 19; y++) {
@@ -610,7 +611,7 @@ scene("start", () => {
     }
  
     onUpdate(() => {
-        // --- TADY JE KLÍČ: čteme prsty KAŽDÝ FRAME ---
+        // --- MULTITOUCH OVLÁDÁNÍ 2 HRÁČŮ ---
         touchMoveDir.p1 = vec2(0, 0);
         touchMoveDir.p2 = vec2(0, 0);
 
@@ -618,7 +619,7 @@ scene("start", () => {
         const centerP1 = vec2(width() / 4, height() / 2);
         const centerP2 = vec2(3 * width() / 4, height() / 2);
 
-        // Hráč 1
+        // Hráč 1 – má přidělený prst?
         if (fingerP1 !== null) {
             const p = touchesNow[fingerP1];
 
@@ -633,7 +634,7 @@ scene("start", () => {
             }
         }
 
-        // Hráč 2
+        // Hráč 2 – má přidělený prst?
         if (fingerP2 !== null) {
             const p = touchesNow[fingerP2];
 
@@ -648,11 +649,19 @@ scene("start", () => {
             }
         }
 
-       
-        // Tady přidáme touchMoveDir.p1 a p2 jako třetí parametr
-        handlePlayer(player1, { left: "left", right: "right", up: "up", down: "down" }, touchMoveDir.p1);
-        handlePlayer(player2, { left: "a", right: "d", up: "w", down: "s" }, touchMoveDir.p2);        
-        
+        // Aplikace směru na hráče
+        handlePlayer(
+            player1,
+            { left: "left", right: "right", up: "up", down: "down" },
+            touchMoveDir.p1
+        );
+
+        handlePlayer(
+            player2,
+            { left: "a", right: "d", up: "w", down: "s" },
+            touchMoveDir.p2
+        );
+
         
         // Dynamické nastavení z-indexu podle pozice Y
         player1.z = player1.pos.y;
