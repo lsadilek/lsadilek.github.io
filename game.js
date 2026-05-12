@@ -248,6 +248,9 @@ scene("start", () => {
       let touchesNow = {}; // <- vlastní seznam prstů
       let touchStartP1 = null;
       let touchStartP2 = null;
+      let fingerP1 = null;
+      let fingerP2 = null;
+
 
       function toCanvasPos(screenPos) {
           const rect = document.getElementById("game").getBoundingClientRect();
@@ -259,46 +262,58 @@ scene("start", () => {
           );
       }
       
-       onTouchStart((pos, t) => {
+      onTouchStart((pos, t) => {
           const p = toCanvasPos(pos);
-          touchesNow[t.id] = p; // uložíme pozici prstu
+          touchesNow[t.id] = p;
 
           const mid = width() / 2;
 
-          if (p.x < mid && touchStartP1 === null) {
+          // Hráč 1 – levá půlka
+          if (p.x < mid && fingerP1 === null) {
+              fingerP1 = t.id;
               touchStartP1 = p.clone();
           }
 
-          if (p.x >= mid && touchStartP2 === null) {
+          // Hráč 2 – pravá půlka
+          if (p.x >= mid && fingerP2 === null) {
+              fingerP2 = t.id;
               touchStartP2 = p.clone();
           }
-        });
+      });
 
-        onTouchMove((pos, t) => {
-            touchesNow[t.id] = toCanvasPos(pos);
-        });
+      onTouchMove((pos, t) => {
+          touchesNow[t.id] = toCanvasPos(pos);
+      });
 
-        onTouchEnd((pos, t) => {
-            delete touchesNow[t.id];
+      onTouchEnd((pos, t) => {
+          delete touchesNow[t.id];
 
-            if (Object.keys(touchesNow).length === 0) {
-                touchMoveDir.p1 = vec2(0, 0);
-                touchMoveDir.p2 = vec2(0, 0);
-                touchStartP1 = null;
-                touchStartP2 = null;
-            }
-        });
-           
-     // Pozadí s náhodnou trávou
-    for (let y = 0; y < 19; y++) {
-        for (let x = 0; x < 25; x++) {
-            add([
-                sprite("trava", { frame: randi(0, 3) }), // Vybere náhodný obrázek trávy
-                pos(x * 32, y * 32),
-                z(-10),
-            ]);
-        }
-    }
+          // Uvolnil prst hráče 1
+          if (t.id === fingerP1) {
+              fingerP1 = null;
+              touchStartP1 = null;
+              touchMoveDir.p1 = vec2(0, 0);
+          }
+
+          // Uvolnil prst hráče 2
+          if (t.id === fingerP2) {
+              fingerP2 = null;
+              touchStartP2 = null;
+              touchMoveDir.p2 = vec2(0, 0);
+          }
+      });
+
+                 
+           // Pozadí s náhodnou trávou
+          for (let y = 0; y < 19; y++) {
+              for (let x = 0; x < 25; x++) {
+                  add([
+                      sprite("trava", { frame: randi(0, 3) }), // Vybere náhodný obrázek trávy
+                      pos(x * 32, y * 32),
+                      z(-10),
+                  ]);
+              }
+          }
 
     const obstacles = [];
 
