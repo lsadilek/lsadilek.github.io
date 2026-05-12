@@ -884,32 +884,47 @@ scene("ceremony", ({ s1, s2 }) => {
             font: "sans-serif",
             align: "center"
         }),
-        pos(width() / 2, height() / 2 - 150),   // místo pevného 110
+        pos(width() / 2, height() / 2 - 150),
         anchor("center"),
         z(20)
     ]);
 
-    // Tlačítko – dynamicky dole uprostřed
+    // Proměnná, která určuje, zda už lze hru restartovat
+    let canRestart = false;
+
+    // Tlačítko – na začátku skryté (opacity: 0)
     const btn = add([
         rect(300, 60, { radius: 8 }),
-        pos(width() / 2, height() - 80),        // místo pevného 520
+        pos(width() / 2, height() - 80),
         color(80, 80, 80),
         area(),
+        opacity(0), // Skryto
         anchor("center"),
         z(20),
         "button"
     ]);
 
-    // Text na tlačítku
-    add([
+    // Text na tlačítku – na začátku skrytý (opacity: 0)
+    const btnText = add([
         text("Nová hra", { size: 24, font: "sans-serif" }),
         pos(width() / 2, height() - 80),
+        opacity(0), // Skryto
         anchor("center"),
         z(21)
     ]);
     
+    // Časovač na 5 sekund – poté zobrazíme tlačítko a povolíme restart
+    wait(5, () => {
+        canRestart = true;
+        btn.opacity = 1;     // Zviditelní tlačítko
+        btnText.opacity = 1; // Zviditelní text
+    });
+    
     // Funkce pro znovuspuštění hry
     function begin() {
+        // Pokud ještě neuplynulo 5 sekund, funkce se přeruší a nic neudělá
+        if (!canRestart) return; 
+
         play("pickup", { volume: 0 }); 
         go("game");
     }
@@ -917,12 +932,13 @@ scene("ceremony", ({ s1, s2 }) => {
     // Funkce pro ohňostroj
     function spawnRandomFirework() {
         fireworkExplosion(
-            rand(100, width() - 100),      // místo 700
-            rand(100, height() / 2)        // místo 250
+            rand(100, width() - 100),
+            rand(100, height() / 2)
         );
         play("firework", { volume: 0.2 });
 
         wait(rand(0.5, 1.5), () => {
+            // Ohňostroj běží dál, i když je tlačítko skryté
             if (get("button").length > 0) {
                 spawnRandomFirework();
             }
@@ -931,14 +947,9 @@ scene("ceremony", ({ s1, s2 }) => {
 
     spawnRandomFirework();
     
-    // Kombinované ovládání pro Novou hru
+    // Ovládání reaguje okamžitě, ale funkce begin() ho propustí až po 5 sekundách
     onMousePress(begin);
     onKeyPress(begin);
-    onClick(begin); // Toto v Kaboom často funguje pro obojí (myš i dotyk)
+    onClick(begin); 
     onTouchStart(begin);
 });
-
-// Spuštění hry
-go("start");
-
-
