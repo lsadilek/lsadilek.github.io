@@ -211,7 +211,8 @@ scene("start", () => {
 
     add([
         // 3. Text pod obrázkem
-        text("\n\n\n\n\n Seber co nejvíc hub. Pozor na jejich výbuch!", 
+        text("n\n NA DOTYKOVÉ OBRAZOVCE POLOŽ PRST NA HRÁČE A POSOUVEJ\n", 
+        text("\n\n Seber co nejvíc hub. Pozor na jejich výbuch!",
         { size: 24, font: "sans-serif" }),
         pos(width() / 2, height() / 2 + 100),
         anchor("center")
