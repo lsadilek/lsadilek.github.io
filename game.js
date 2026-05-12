@@ -262,40 +262,39 @@ scene("start", () => {
 
       onTouchStart((pos, t) => {
           const p = toCanvasPos(pos);
-          touchesNow[t.id] = p;
+          touchesNow[t.identifier] = p; 
 
           const mid = width() / 2;
 
           // Hráč 1 – levá půlka
           if (p.x < mid && fingerP1 === null) {
-              fingerP1 = t.id;
+              fingerP1 = t.identifier; 
           }
 
           // Hráč 2 – pravá půlka
           if (p.x >= mid && fingerP2 === null) {
-              fingerP2 = t.id;
+              fingerP2 = t.identifier; 
           }
       });
 
       onTouchMove((pos, t) => {
-          touchesNow[t.id] = toCanvasPos(pos);
+          touchesNow[t.identifier] = toCanvasPos(pos); 
       });
 
       onTouchEnd((pos, t) => {
-          delete touchesNow[t.id];
+          delete touchesNow[t.identifier]; 
 
-          if (t.id === fingerP1) {
+          if (t.identifier === fingerP1) { 
               fingerP1 = null;
               touchMoveDir.p1 = vec2(0, 0);
           }
 
-          if (t.id === fingerP2) {
+          if (t.identifier === fingerP2) { 
               fingerP2 = null;
               touchMoveDir.p2 = vec2(0, 0);
           }
       });
-
-                 
+                       
            // Pozadí s náhodnou trávou
           for (let y = 0; y < 19; y++) {
               for (let x = 0; x < 25; x++) {
