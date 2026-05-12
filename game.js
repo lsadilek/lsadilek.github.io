@@ -268,20 +268,20 @@ scene("start", () => {
           const p = toCanvasPos(pos);
           touchesNow[t.identifier] = p;
 
-          const GRAB_RADIUS = 60; // Jak blízko musí prst být k panáčkovi
+          const GRAB_RADIUS = 100; // Zvětšeno pro pohodlnější chycení
           const dist1 = p.dist(player1.pos);
           const dist2 = p.dist(player2.pos);
 
-          // Chytni Hráče 1 (Jakub), pokud je blízko, volný a blíž než k Hráči 2
-          if (fingerP1 === null && dist1 < GRAB_RADIUS && (fingerP2 !== null || dist1 <= dist2)) {
+          // Priorita pro Hráče 1
+          if (fingerP1 === null && dist1 < GRAB_RADIUS) {
               fingerP1 = t.identifier;
           } 
-          // Jinak chytni Hráče 2 (Eliška)
+          // Pokud prst nechytil Hráče 1, zkusíme Hráče 2
           else if (fingerP2 === null && dist2 < GRAB_RADIUS) {
               fingerP2 = t.identifier;
           }
       });
- 
+  
       onTouchMove((pos, t) => {
           touchesNow[t.identifier] = toCanvasPos(pos); 
       });
@@ -613,42 +613,40 @@ scene("start", () => {
         }
     }
 
-    onUpdate(() => {
-        // Každý snímek nejprve vrátíme rychlost na základ (pro ovládání klávesnicí)
-        player1.speed = 180;
-        player2.speed = 180;
+        onUpdate(() => {
+            // Reset směru pro animace na začátku každého snímku
+            touchMoveDir.p1 = vec2(0, 0);
+            touchMoveDir.p2 = vec2(0, 0);
 
-        touchMoveDir.p1 = vec2(0, 0);
-        touchMoveDir.p2 = vec2(0, 0);
-
-        // Hráč 1 – Logika přímého tahání
-        if (fingerP1 !== null) {
-            const p = touchesNow[fingerP1];
-            if (p) {
-                const delta = p.sub(player1.pos);
-                if (delta.len() > 2) { 
-                    touchMoveDir.p1 = delta; // Předáme směr pohybu pro animaci
-                    player1.pos = p;         // Panáček je přesně pod prstem
-                    player1.speed = 0;       // V handlePlayer se už neposune dál
+            // Hráč 1 - Jakub
+            if (fingerP1 !== null) {
+                const p = touchesNow[fingerP1];
+                if (p) {
+                    const dist = p.dist(player1.pos);
+                    if (dist > 10) { // Pokud je prst dál než 10px, panáček běží
+                        const dir = p.sub(player1.pos).unit();
+                        player1.move(dir.scale(player1.speed));
+                        touchMoveDir.p1 = dir; // Předáme směr pro animaci
+                    }
                 }
             }
-        }
 
-        // Hráč 2 – Logika přímého tahání
-        if (fingerP2 !== null) {
-            const p = touchesNow[fingerP2];
-            if (p) {
-                const delta = p.sub(player2.pos);
-                if (delta.len() > 2) {
-                    touchMoveDir.p2 = delta; // Předáme směr pohybu pro animaci
-                    player2.pos = p;         // Panáček je přesně pod prstem
-                    player2.speed = 0;       // V handlePlayer se už neposune dál
+            // Hráč 2 - Eliška
+            if (fingerP2 !== null) {
+                const p = touchesNow[fingerP2];
+                if (p) {
+                    const dist = p.dist(player2.pos);
+                    if (dist > 10) {
+                        const dir = p.sub(player2.pos).unit();
+                        player2.move(dir.scale(player2.speed));
+                        touchMoveDir.p2 = dir;
+                    }
                 }
             }
-        }
 
-        // Aplik
-
+            // Volání animací (handlePlayer) - nechej tak, jak máš, 
+            // jen se ujisti, že v handlePlayer nemáš to player.speed = 0!
+ 
         // Aplikace směru na hráče
         handlePlayer(
             player1,
