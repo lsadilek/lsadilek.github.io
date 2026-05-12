@@ -953,3 +953,9 @@ scene("ceremony", ({ s1, s2 }) => {
     onClick(begin); 
     onTouchStart(begin);
 });
+
+
+// Spuštění hry
+go("start");
+
+
