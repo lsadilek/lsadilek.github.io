@@ -268,18 +268,17 @@ scene("start", () => {
           const p = toCanvasPos(pos);
           touchesNow[t.identifier] = p;
           const mid = width() / 2;
-          lastTouchP1 = p;
-          lastTouchP2 = p;
-          
+
           if (p.x < mid && fingerP1 === null) {
               fingerP1 = t.identifier;
-              touchStartP1 = p; // Uložíme místo dotyku jako střed pro P1
+              lastTouchP1 = p; // Správně: Pouze pro Hráče 1
           }
           if (p.x >= mid && fingerP2 === null) {
               fingerP2 = t.identifier;
-              touchStartP2 = p; // Uložíme místo dotyku jako střed pro P2
+              lastTouchP2 = p; // Správně: Pouze pro Hráče 2
           }
       });
+
 
 
       onTouchMove((pos, t) => {
