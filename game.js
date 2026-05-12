@@ -250,6 +250,9 @@ scene("start", () => {
       let fingerP2 = null;
       let touchStartP1 = null;
       let touchStartP2 = null;
+      let lastTouchP1 = null;
+      let lastTouchP2 = null;
+
 
       function toCanvasPos(screenPos) {
           const rect = document.getElementById("game").getBoundingClientRect();
@@ -265,7 +268,9 @@ scene("start", () => {
           const p = toCanvasPos(pos);
           touchesNow[t.identifier] = p;
           const mid = width() / 2;
-
+          lastTouchP1 = p;
+          lastTouchP2 = p;
+          
           if (p.x < mid && fingerP1 === null) {
               fingerP1 = t.identifier;
               touchStartP1 = p; // Uložíme místo dotyku jako střed pro P1
@@ -620,31 +625,34 @@ scene("start", () => {
         const centerP2 = vec2(3 * width() / 4, height() / 2);
 
         // Hráč 1 – má přidělený prst?
-        if (fingerP1 !== null && touchStartP1 !== null) {
+        if (fingerP1 !== null && lastTouchP1 !== null) {
             const p = touchesNow[fingerP1];
-            if (!p || p.x >= mid) {
-                fingerP1 = null;
-                touchStartP1 = null;
-            } else {
-                const delta = p.sub(touchStartP1); // Počítáme od startovního dotyku!
-                if (delta.len() > 4) {             // Vyšší citlivost (menší mrtvá zóna)
+            if (p) {
+                const delta = p.sub(lastTouchP1); // Rozdíl oproti předchozímu snímku
+                
+                if (delta.len() > 0.5) {           // Extrémní citlivost na sebemenší pohyb
                     touchMoveDir.p1 = delta.unit();
+                } else {
+                    touchMoveDir.p1 = vec2(0, 0);   // Když prst zastavíš, postava stojí
                 }
+                
+                lastTouchP1 = p; // Klíčový krok: posuneme porovnávací bod na aktuální pozici
             }
         }
-
-
+ 
         // Hráč 2 – má přidělený prst?
-        if (fingerP2 !== null && touchStartP2 !== null) {
+        if (fingerP2 !== null && lastTouchP2 !== null) {
             const p = touchesNow[fingerP2];
-            if (!p || p.x >= mid) {
-                fingerP2 = null;
-                touchStartP2 = null;
-            } else {
-                const delta = p.sub(touchStartP1); // Počítáme od startovního dotyku!
-                if (delta.len() > 4) {             // Vyšší citlivost (menší mrtvá zóna)
+            if (p) {
+                const delta = p.sub(lastTouchP2); // Rozdíl oproti předchozímu snímku
+                
+                if (delta.len() > 0.5) {           // Extrémní citlivost na sebemenší pohyb
                     touchMoveDir.p2 = delta.unit();
+                } else {
+                    touchMoveDir.p2 = vec2(0, 0);   // Když prst zastavíš, postava stojí
                 }
+                
+                lastTouchP2 = p; // Klíčový krok: posuneme porovnávací bod na aktuální pozici
             }
         }
 
