@@ -248,7 +248,8 @@ scene("start", () => {
       let touchesNow = {};
       let fingerP1 = null;
       let fingerP2 = null;
-
+      let touchStartP1 = null;
+      let touchStartP2 = null;
 
       function toCanvasPos(screenPos) {
           const rect = document.getElementById("game").getBoundingClientRect();
@@ -262,39 +263,39 @@ scene("start", () => {
 
       onTouchStart((pos, t) => {
           const p = toCanvasPos(pos);
-          touchesNow[t.identifier] = p; 
-
+          touchesNow[t.identifier] = p;
           const mid = width() / 2;
 
-          // Hráč 1 – levá půlka
           if (p.x < mid && fingerP1 === null) {
-              fingerP1 = t.identifier; 
+              fingerP1 = t.identifier;
+              touchStartP1 = p; // Uložíme místo dotyku jako střed pro P1
           }
-
-          // Hráč 2 – pravá půlka
           if (p.x >= mid && fingerP2 === null) {
-              fingerP2 = t.identifier; 
+              fingerP2 = t.identifier;
+              touchStartP2 = p; // Uložíme místo dotyku jako střed pro P2
           }
       });
+
 
       onTouchMove((pos, t) => {
           touchesNow[t.identifier] = toCanvasPos(pos); 
       });
 
       onTouchEnd((pos, t) => {
-          delete touchesNow[t.identifier]; 
+          delete touchesNow[t.identifier];
 
-          if (t.identifier === fingerP1) { 
+          if (t.identifier === fingerP1) {
               fingerP1 = null;
+              touchStartP1 = null; // Vyčistit
               touchMoveDir.p1 = vec2(0, 0);
           }
-
-          if (t.identifier === fingerP2) { 
+          if (t.identifier === fingerP2) {
               fingerP2 = null;
+              touchStartP2 = null; // Vyčistit
               touchMoveDir.p2 = vec2(0, 0);
           }
       });
-                       
+                                 
            // Pozadí s náhodnou trávou
           for (let y = 0; y < 19; y++) {
               for (let x = 0; x < 25; x++) {
@@ -619,30 +620,29 @@ scene("start", () => {
         const centerP2 = vec2(3 * width() / 4, height() / 2);
 
         // Hráč 1 – má přidělený prst?
-        if (fingerP1 !== null) {
+        if (fingerP1 !== null && touchStartP1 !== null) {
             const p = touchesNow[fingerP1];
-
-            // prst zmizel nebo přešel na pravou stranu
             if (!p || p.x >= mid) {
                 fingerP1 = null;
+                touchStartP1 = null;
             } else {
-                const delta = p.sub(centerP1);
-                if (delta.len() > 10) {
+                const delta = p.sub(touchStartP1); // Počítáme od startovního dotyku!
+                if (delta.len() > 4) {             // Vyšší citlivost (menší mrtvá zóna)
                     touchMoveDir.p1 = delta.unit();
                 }
             }
         }
 
-        // Hráč 2 – má přidělený prst?
-        if (fingerP2 !== null) {
-            const p = touchesNow[fingerP2];
 
-            // prst zmizel nebo přešel na levou stranu
-            if (!p || p.x < mid) {
+        // Hráč 2 – má přidělený prst?
+        if (fingerP2 !== null && touchStartP2 !== null) {
+            const p = touchesNow[fingerP2];
+            if (!p || p.x >= mid) {
                 fingerP2 = null;
+                touchStartP2 = null;
             } else {
-                const delta = p.sub(centerP2);
-                if (delta.len() > 10) {
+                const delta = p.sub(touchStartP1); // Počítáme od startovního dotyku!
+                if (delta.len() > 4) {             // Vyšší citlivost (menší mrtvá zóna)
                     touchMoveDir.p2 = delta.unit();
                 }
             }
