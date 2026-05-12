@@ -619,29 +619,24 @@ scene("start", () => {
     }
  
     onUpdate(() => {
-                // --- TADY JE KLÍČ: čteme prsty KAŽDÝ FRAME ---
+        // --- TADY JE KLÍČ: čteme prsty KAŽDÝ FRAME ---
         touchMoveDir.p1 = vec2(0, 0);
         touchMoveDir.p2 = vec2(0, 0);
 
-        const mid = width() / 2;
-
-        for (const id in touchesNow) {
-            const p = touchesNow[id];
-
-            // hráč 1
-            if (p.x < mid) {
-                if (touchStartP1 === null) touchStartP1 = p.clone();
-                const delta = p.sub(touchStartP1);
-                if (delta.len() > 6) touchMoveDir.p1 = delta.unit();
-            }
-
-            // hráč 2
-            if (p.x >= mid) {
-                if (touchStartP2 === null) touchStartP2 = p.clone();
-                const delta = p.sub(touchStartP2);
-                if (delta.len() > 6) touchMoveDir.p2 = delta.unit();
-            }
+        // Hráč 1
+        if (fingerP1 !== null && touchesNow[fingerP1]) {
+            const p = touchesNow[fingerP1];
+            const delta = p.sub(touchStartP1);
+            if (delta.len() > 6) touchMoveDir.p1 = delta.unit();
         }
+
+        // Hráč 2
+        if (fingerP2 !== null && touchesNow[fingerP2]) {
+            const p = touchesNow[fingerP2];
+            const delta = p.sub(touchStartP2);
+            if (delta.len() > 6) touchMoveDir.p2 = delta.unit();
+        }
+
 
     
         // Tady přidáme touchMoveDir.p1 a p2 jako třetí parametr
