@@ -268,7 +268,7 @@ scene("start", () => {
           const p = toCanvasPos(pos);
           touchesNow[t.identifier] = p;
 
-          const GRAB_RADIUS = 50; // Zvětšeno pro pohodlnější chycení
+          const GRAB_RADIUS = 32; // Zvětšeno pro pohodlnější chycení
           const dist1 = p.dist(player1.pos);
           const dist2 = p.dist(player2.pos);
 
