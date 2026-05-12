@@ -267,20 +267,21 @@ scene("start", () => {
       onTouchStart((pos, t) => {
           const p = toCanvasPos(pos);
           touchesNow[t.identifier] = p;
-          const mid = width() / 2;
 
-          if (p.x < mid && fingerP1 === null) {
+          const GRAB_RADIUS = 60; // Jak blízko musí prst být k panáčkovi
+          const dist1 = p.dist(player1.pos);
+          const dist2 = p.dist(player2.pos);
+
+          // Chytni Hráče 1 (Jakub), pokud je blízko, volný a blíž než k Hráči 2
+          if (fingerP1 === null && dist1 < GRAB_RADIUS && (fingerP2 !== null || dist1 <= dist2)) {
               fingerP1 = t.identifier;
-              lastTouchP1 = p; // Správně: Pouze pro Hráče 1
-          }
-          if (p.x >= mid && fingerP2 === null) {
+          } 
+          // Jinak chytni Hráče 2 (Eliška)
+          else if (fingerP2 === null && dist2 < GRAB_RADIUS) {
               fingerP2 = t.identifier;
-              lastTouchP2 = p; // Správně: Pouze pro Hráče 2
           }
       });
-
-
-
+ 
       onTouchMove((pos, t) => {
           touchesNow[t.identifier] = toCanvasPos(pos); 
       });
@@ -290,16 +291,14 @@ scene("start", () => {
 
           if (t.identifier === fingerP1) {
               fingerP1 = null;
-              touchStartP1 = null; // Vyčistit
               touchMoveDir.p1 = vec2(0, 0);
           }
           if (t.identifier === fingerP2) {
               fingerP2 = null;
-              touchStartP2 = null; // Vyčistit
               touchMoveDir.p2 = vec2(0, 0);
           }
       });
-                                 
+                                                
            // Pozadí s náhodnou trávou
           for (let y = 0; y < 19; y++) {
               for (let x = 0; x < 25; x++) {
@@ -613,47 +612,42 @@ scene("start", () => {
             }
         }
     }
- 
+
     onUpdate(() => {
-        // --- MULTITOUCH OVLÁDÁNÍ 2 HRÁČŮ ---
+        // Každý snímek nejprve vrátíme rychlost na základ (pro ovládání klávesnicí)
+        player1.speed = 180;
+        player2.speed = 180;
+
         touchMoveDir.p1 = vec2(0, 0);
         touchMoveDir.p2 = vec2(0, 0);
 
-        const mid = width() / 2;
-        const centerP1 = vec2(width() / 4, height() / 2);
-        const centerP2 = vec2(3 * width() / 4, height() / 2);
-
-        // Hráč 1 – má přidělený prst?
-        if (fingerP1 !== null && lastTouchP1 !== null) {
+        // Hráč 1 – Logika přímého tahání
+        if (fingerP1 !== null) {
             const p = touchesNow[fingerP1];
             if (p) {
-                const delta = p.sub(lastTouchP1); // Rozdíl oproti předchozímu snímku
-                
-                if (delta.len() > 0.5) {           // Extrémní citlivost na sebemenší pohyb
-                    touchMoveDir.p1 = delta.unit();
-                } else {
-                    touchMoveDir.p1 = vec2(0, 0);   // Když prst zastavíš, postava stojí
+                const delta = p.sub(player1.pos);
+                if (delta.len() > 2) { 
+                    touchMoveDir.p1 = delta; // Předáme směr pohybu pro animaci
+                    player1.pos = p;         // Panáček je přesně pod prstem
+                    player1.speed = 0;       // V handlePlayer se už neposune dál
                 }
-                
-                lastTouchP1 = p; // Klíčový krok: posuneme porovnávací bod na aktuální pozici
             }
         }
- 
-        // Hráč 2 – má přidělený prst?
-        if (fingerP2 !== null && lastTouchP2 !== null) {
+
+        // Hráč 2 – Logika přímého tahání
+        if (fingerP2 !== null) {
             const p = touchesNow[fingerP2];
             if (p) {
-                const delta = p.sub(lastTouchP2); // Rozdíl oproti předchozímu snímku
-                
-                if (delta.len() > 0.5) {           // Extrémní citlivost na sebemenší pohyb
-                    touchMoveDir.p2 = delta.unit();
-                } else {
-                    touchMoveDir.p2 = vec2(0, 0);   // Když prst zastavíš, postava stojí
+                const delta = p.sub(player2.pos);
+                if (delta.len() > 2) {
+                    touchMoveDir.p2 = delta; // Předáme směr pohybu pro animaci
+                    player2.pos = p;         // Panáček je přesně pod prstem
+                    player2.speed = 0;       // V handlePlayer se už neposune dál
                 }
-                
-                lastTouchP2 = p; // Klíčový krok: posuneme porovnávací bod na aktuální pozici
             }
         }
+
+        // Aplik
 
         // Aplikace směru na hráče
         handlePlayer(
