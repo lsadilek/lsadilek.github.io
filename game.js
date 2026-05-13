@@ -59,7 +59,6 @@ loadSprite("vitez2", "assets/vitez2.png");
 loadSprite("vitez3", "assets/vitez3.png");
 loadSprite("parez", "assets/parez.png");
 loadSprite("klavesy", "assets/klavesy.png");
-loadSprite("tlacitko_nova_hra", "assets/tlacitko.png");
 
 
 loadSprite("star", "assets/houba.png", { 
@@ -212,22 +211,14 @@ scene("start", () => {
 
     add([
         // 3. Text pod obrázkem
-        text("Na dotykové obrazovce dej prst na hráče",
+        text("\n\n\n\n\n Seber co nejvíc hub. Pozor na jejich výbuch!", 
         { size: 24, font: "sans-serif" }),
         pos(width() / 2, height() / 2 + 100),
         anchor("center")
     ]);
-    
+   
     add([
-        // 4. Text pod obrázkem
-        text("Seber co nejvíc hub. Pozor na jejich výbuch!",
-        { size: 24, font: "sans-serif" }),
-        pos(width() / 2, height() / 2 + 150),
-        anchor("center")
-    ]);
-       
-    add([
-        // 5. Další text pod obrázkem
+        // 4. Další text pod obrázkem
         text("\nKlikni pro start", 
         { size: 24, font: "sans-serif" }),
         pos(width() / 2, height() / 2 + 200),
@@ -584,7 +575,7 @@ scene("start", () => {
 
 
     // ---------------------------------------------------------
-    // FUNKCE handlePlayer
+    // FUNKCE handlePlayer – beze změny, jen zkopírováno celé
     // ---------------------------------------------------------
     function handlePlayer(p, keys, tDir = vec2(0,0)) { // tDir je směr z dotyku
         let moveDir = vec2(0, 0);
@@ -634,6 +625,7 @@ scene("start", () => {
                     const dist = p.dist(player1.pos);
                     if (dist > 10) { // Pokud je prst dál než 10px, panáček běží
                         const dir = p.sub(player1.pos).unit();
+                        player1.move(dir.scale(player1.speed));
                         touchMoveDir.p1 = dir; // Předáme směr pro animaci
                     }
                 }
@@ -646,6 +638,7 @@ scene("start", () => {
                     const dist = p.dist(player2.pos);
                     if (dist > 10) {
                         const dir = p.sub(player2.pos).unit();
+                        player2.move(dir.scale(player2.speed));
                         touchMoveDir.p2 = dir;
                     }
                 }
@@ -854,6 +847,7 @@ scene("start", () => {
     });
    
 }); // Konec scény game
+
 // --- SCÉNA CEREMONY ---
 scene("ceremony", ({ s1, s2 }) => {
 
@@ -892,82 +886,43 @@ scene("ceremony", ({ s1, s2 }) => {
             font: "sans-serif",
             align: "center"
         }),
-        pos(width() / 2, height() / 2 - 150),
+        pos(width() / 2, height() / 2 - 150),   // místo pevného 110
         anchor("center"),
         z(20)
     ]);
 
-    // Proměnná, která určuje, zda už lze hru restartovat
-    let canRestart = false;
-
-    // TLAČÍTKO JAKO OBRÁZEK (SPRITE)
+    // Tlačítko – dynamicky dole uprostřed
     const btn = add([
-        sprite("tlacitko_nova_hra"), 
+        rect(300, 60, { radius: 8 }),
+        pos(width() / 2, height() - 80),        // místo pevného 520
+        color(80, 80, 80),
+        area(),
+        anchor("center"),
+        z(20),
+        "button"
+    ]);
+
+    // Text na tlačítku
+    add([
+        text("Nová hra", { size: 24, font: "sans-serif" }),
         pos(width() / 2, height() - 80),
         anchor("center"),
-        area(), 
-        opacity(0), // Na začátku skryté
-        z(20)
+        z(21)
     ]);
-    
-    // Časovač na 5 sekund – poté zviditelníme tlačítko a povolíme restart
-    wait(5, () => {
-        canRestart = true;
-        btn.opacity = 1; 
-    });
-    
-    // Společná funkce pro spuštění hry
-    function begin() {
-        if (!canRestart) return; 
-        play("pickup", { volume: 0 }); 
-        go("game");
-    }
 
-    // IDENTICKÁ FUNKCE PRO PŘEPOČET 
-    function toCanvasPos(screenPos) {
-        const rect = document.getElementById("game").getBoundingClientRect();
-        const scaleX = width() / rect.width;
-        const scaleY = height() / rect.height;
-        return vec2(
-            (screenPos.x - rect.left) * scaleX,
-            (screenPos.y - rect.top) * scaleY
-        );
-    }
-
-    // IDENTICKÝ DOTYKOVÝ SYSTÉM JAKO U PANÁČKŮ 
-    onTouchStart((pos, t) => {
-        const p = toCanvasPos(pos); // Přepočet pozice prstu
-        
-        const GRAB_RADIUS = 100; // Akční rádius dotyku (případně zvětšete podle velikosti obrázku)
-        const dist = p.dist(btn.pos); // Vzdálenost prstu od středu tlačítka
-
-        // Pokud prst zasáhl oblast tlačítka, odstartujeme hru
-        if (dist < GRAB_RADIUS) {
-            begin();
-        }
-    });
-
-    // DETEKCE PRO KLIK MYŠÍ
-    onClick(() => {
-        if (btn.hasPoint(mousePos())) {
-            begin();
-        }
-    });
-    
-    // DETEKCE PRO KLÁVESNICI (Mezerník / Enter)
-    onKeyPress(begin);
+    // Kliknutí na tlačítko
+    btn.onClick(() => go("game"));
 
     // Funkce pro ohňostroj
     function spawnRandomFirework() {
         fireworkExplosion(
-            rand(100, width() - 100),
-            rand(100, height() / 2)
+            rand(100, width() - 100),      // místo 700
+            rand(100, height() / 2)        // místo 250
         );
         play("firework", { volume: 0.2 });
 
         wait(rand(0.5, 1.5), () => {
-            // OPRAVENO: Použití funkční metody .exists() z Kaboom.js
-            if (btn.exists()) { 
+            if (get("button").length > 0) {
                 spawnRandomFirework();
             }
         });
