@@ -10,7 +10,6 @@
             padding: 0;
             width: 100%;
             height: 100%;
-            height: -webkit-fill-available; /* Oprava pro mobilní prohlížeče */
             overflow: hidden;
             position: fixed;
             top: 0;
@@ -24,10 +23,20 @@
             font-family: sans-serif;
         }
 
-        /* Canvas drží poměr 4:3 (800x600) a vyplní displej s černými okraji */
+        /* Ochranný kontejner vytvoří 1px neviditelný štít od okrajů prohlížeče */
+        .game-container {
+            width: calc(100vw - 2px);
+            height: calc(100vh - 2px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            touch-action: none;
+        }
+
+        /* Canvas uvnitř kontejneru drží herní poměr 4:3 */
         #game {
-            width: 100vw;
-            height: 100vh;
+            width: 100%;
+            height: 100%;
             max-width: 100%;
             max-height: 100%;
             object-fit: contain;
@@ -63,7 +72,7 @@
             #orientation-warning {
                 display: flex;
             }
-            #game {
+            .game-container {
                 display: none;
             }
         }
@@ -76,31 +85,34 @@
         Pro hraní otočte prosím mobil naležato.
     </div>
 
-    <canvas id="game" width="800" height="600"></canvas>
+    <!-- Obalovací prvek izolující doteky -->
+    <div class="game-container">
+        <canvas id="game" width="800" height="600"></canvas>
+    </div>
         
+    <!-- RUČNĚ ZKONTROLOVANÝ PLNOTUČNÝ ODKAZ NA KABOOM -->
     <script src="https://unpkg.com/kaboom@3000.0.0/dist/kaboom.js" defer></script>
     <script src="game.js" defer></script>
 
-    <!-- TENTO SKRIPT NATVRDO ZABLOKUJE SCHOVÁVÁNÍ LIŠTY V DUCKDUCKGO -->
+    <!-- JavaScriptová pojistka pro ne-pasivní režim dotyků -->
     <script>
         window.addEventListener('DOMContentLoaded', () => {
             const canvas = document.getElementById('game');
-            
-            // Funkce, která nepustí gesto dál do prohlížeče
+            if (!canvas) return;
+
             const preventScroll = (e) => {
                 if (e.touches.length > 0) {
                     e.preventDefault();
                 }
             };
 
-            // Klíčové je { passive: false }, což dává právní sílu k preventDefault()
             canvas.addEventListener('touchstart', preventScroll, { passive: false });
             canvas.addEventListener('touchmove', preventScroll, { passive: false });
             canvas.addEventListener('touchend', preventScroll, { passive: false });
             
-            // Pojistka pro celou stránku pozadí
             document.body.addEventListener('touchmove', (e) => { e.preventDefault(); }, { passive: false });
         });
     </script>
 </body>
 </html>
+
