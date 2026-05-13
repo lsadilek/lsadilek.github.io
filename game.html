@@ -23,20 +23,10 @@
             font-family: sans-serif;
         }
 
-        /* Fixní kontejner – skript mu natvrdo vnutí rozměr v px */
-        .game-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            touch-action: none;
-            box-sizing: border-box;
-            overflow: hidden;
-        }
-
-        /* Canvas drží striktní poměr 4:3 a vyplní zafixovaný kontejner */
+        /* Canvas drží poměr 4:3 (800x600) a vyplní displej s černými okraji */
         #game {
-            width: 100%;
-            height: 100%;
+            width: 100vw;
+            height: 100vh;
             max-width: 100%;
             max-height: 100%;
             object-fit: contain;
@@ -67,11 +57,12 @@
             box-sizing: border-box;
         }
 
+        /* Zobrazení varování, pokud je displej užší než herní poměr 4:3 (800x600) */
         @media screen and (max-aspect-ratio: 4/3) {
             #orientation-warning {
                 display: flex;
             }
-            .game-container {
+            #game {
                 display: none;
             }
         }
@@ -84,54 +75,16 @@
         Pro hraní otočte prosím mobil naležato.
     </div>
 
-    <!-- Obalovací prvek, kterému skript uzamkne velikost -->
-    <div class="game-container" id="lock-container">
-        <canvas id="game" width="800" height="600"></canvas>
-    </div>
+    <canvas id="game" width="800" height="600"></canvas>
         
     <script src="https://unpkg.com/kaboom@3000.0.0/dist/kaboom.js" defer></script>
     <script src="game.js" defer></script>
-
-    <script>
-        function lockGameSize() {
-            const container = document.getElementById('lock-container');
-            if (!container) return;
-
-            // Získáme rozměr čistého viditelného dokumentu bez skákajících lišt
-            const cleanWidth = document.documentElement.clientWidth;
-            const cleanHeight = document.documentElement.clientHeight;
-
-            // Zapíšeme natvrdo fixní pixely do HTML stylu prvku
-            container.style.width = cleanWidth + "px";
-            container.style.height = cleanHeight + "px";
-        }
-
-        window.addEventListener('DOMContentLoaded', () => {
-            // Zamkneme plochu okamžitě při načtení webu
-            lockGameSize();
-
-            // Pokud se okno otočí nebo reálně změní, zafixujeme novou plochu
-            window.addEventListener('resize', lockGameSize);
-            window.addEventListener('orientationchange', () => {
-                setTimeout(lockGameSize, 200); // Drobná pauza na překreslení systému
-            });
-
-            // Blokace posunu na úrovni canvasu a těla dokumentu
-            const canvas = document.getElementById('game');
-            if (!canvas) return;
-
-            const preventScroll = (e) => {
-                if (e.touches.length > 0) {
-                    e.preventDefault();
-                }
-            };
-
-            canvas.addEventListener('touchstart', preventScroll, { passive: false });
-            canvas.addEventListener('touchmove', preventScroll, { passive: false });
-            canvas.addEventListener('touchend', preventScroll, { passive: false });
-            document.body.addEventListener('touchmove', (e) => { e.preventDefault(); }, { passive: false });
-        });
-    </script>
 </body>
 </html>
+
+
+
+
+
+
 
