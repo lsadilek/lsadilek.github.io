@@ -59,6 +59,7 @@ loadSprite("vitez2", "assets/vitez2.png");
 loadSprite("vitez3", "assets/vitez3.png");
 loadSprite("parez", "assets/parez.png");
 loadSprite("klavesy", "assets/klavesy.png");
+loadSprite("tlacitko_nova_hra", "assets/tlacitko.png");
 
 
 loadSprite("star", "assets/houba.png", { 
@@ -900,90 +901,37 @@ scene("ceremony", ({ s1, s2 }) => {
     // Proměnná, která určuje, zda už lze hru restartovat
     let canRestart = false;
 
-    // Tlačítko – na začátku skryté (opacity: 0)
-    // DŮLEŽITÉ: Barva je [80, 80, 80], tu budeme testovat níže
+    // TLAČÍTKO JAKO OBRÁZEK (SPRITE) 
+    // Kaboom pro sprite vygeneruje přesný hitbox, který funguje jako u hráčů
     const btn = add([
-        rect(300, 60, { radius: 8 }),
+        sprite("tlacitko_nova_hra"), // Použijeme nahraný obrázek
         pos(width() / 2, height() - 80),
-        color(80, 80, 80),
-        area(),
-        opacity(0), 
         anchor("center"),
+        area(), // Hitbox se automaticky přizpůsobí rozměrům obrázku
+        opacity(0), // Na začátku skryté
         z(20),
-        "button"
-    ]);
-
-    // Text na tlačítku – na začátku skrytý (opacity: 0)
-    const btnText = add([
-        text("Nová hra", { size: 24, font: "sans-serif" }),
-        pos(width() / 2, height() - 80),
-        opacity(0), 
-        anchor("center"),
-        z(21)
+        "button" // Tag pro detekci kliknutí
     ]);
     
-    // Časovač na 5 sekund – poté zobrazíme tlačítko a povolíme restart
+    // Časovač na 5 sekund – poté zviditelníme tlačítko a povolíme restart
     wait(5, () => {
         canRestart = true;
-        btn.opacity = 1;     
-        btnText.opacity = 1; 
+        btn.opacity = 1; // Zviditelní obrázek tlačítka
     });
     
-    // NOVÁ FUNKCE: Kontrola barvy pod prstem/myší
-    function checkColorAndStart(e) {
+    // FUNKCE PRO START (Spustí se POUZE při kliknutí na hitbox obrázku)
+    // Funguje úplně stejně jako detekce dotyku u vašich hráčů
+    onClick("button", () => {
+        if (!canRestart) return; 
+
+        play("pickup", { volume: 0 }); 
+        go("game");
+    });
+
+    // Ponecháno pro pohodlné testování na PC mezerníkem
+    onKeyPress("space", () => {
         if (!canRestart) return;
-
-        // 1. Získání HTML elementu canvasu
-        const canvas = document.querySelector("canvas");
-        if (!canvas) return;
-
-        const ctx = canvas.getContext("2d");
-        const rect = canvas.getBoundingClientRect();
-
-        // 2. Získání souřadnic dotyku/kliknutí vůči oknu prohlížeče
-        let clientX = 0;
-        let clientY = 0;
-
-        if (e.touches && e.touches[0]) {
-            // Mobilní dotyk
-            clientX = e.touches[0].clientX;
-            clientY = e.touches[0].clientY;
-        } else {
-            // Kliknutí myší (PC)
-            clientX = e.clientX;
-            clientY = e.clientY;
-        }
-
-        // 3. Přepočet na reálné pixely uvnitř canvasu (řeší roztažení/otočení)
-        const canvasX = ((clientX - rect.left) / rect.width) * canvas.width;
-        const canvasY = ((clientY - rect.top) / rect.height) * canvas.height;
-
-        try {
-            // 4. Přečtení barvy jednoho pixelu (RGBA)
-            const pixel = ctx.getImageData(canvasX, canvasY, 1, 1).data;
-            const r = pixel[0];
-            const g = pixel[1];
-            const b = pixel[2];
-
-            // 5. Test, zda je barva blízko šedé (80, 80, 80) tlačítka
-            // Tolerance +-5 pixelů kvůli antialiasingu (vyhlazování hran)
-            if (r >= 75 && r <= 85 && g >= 75 && g <= 85 && b >= 75 && b <= 85) {
-                play("pickup", { volume: 0 }); 
-                go("game");
-            }
-        } catch (err) {
-            console.error("Nelze přečíst barvu z canvasu:", err);
-        }
-    }
-
-    // Navázání přímo na nativní HTML/prohlížečové eventy, které obchází Kaboom engine
-    window.addEventListener("click", checkColorAndStart);
-    window.addEventListener("touchstart", checkColorAndStart);
-
-    // Vyčištění eventů při opuštění scény, aby nestrašily v samotné hře
-    onSceneLeave(() => {
-        window.removeEventListener("click", checkColorAndStart);
-        window.removeEventListener("touchstart", checkColorAndStart);
+        go("game");
     });
 
     // Funkce pro ohňostroj
