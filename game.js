@@ -947,13 +947,14 @@ scene("ceremony", ({ s1, s2 }) => {
         }
     });
 
-    // Pro pohodlné testování na PC myší/klávesnicí
+    // DETEKCE PRO KLIK MYŠÍ
     onClick(() => {
-        const p = toCanvasPos(mousePos());
-        if (p.dist(btn.pos) < 40) {
+        if (btn.hasPoint(mousePos())) {
             begin();
         }
     });
+    
+    // DETEKCE PRO KLÁVESNICI (Mezerník / Enter)
     onKeyPress(begin);
 
     // Funkce pro ohňostroj
