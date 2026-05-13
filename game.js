@@ -901,15 +901,14 @@ scene("ceremony", ({ s1, s2 }) => {
     // Proměnná, která určuje, zda už lze hru restartovat
     let canRestart = false;
 
-    // Tlačítko jako OBRÁZEK (sprite) s aktivní herní oblastí area()
+    // TLAČÍTKO JAKO OBRÁZEK (SPRITE) - přesně podle vašeho přání
     const btn = add([
-        sprite("tlacitko_nova_hra"), // Obrázek tlačítka zavedený v loadSprite
+        sprite("klavesy"), // ZDE si změňte na název vašeho sprite tlačítka (např. "tlacitko_nova_hra")
         pos(width() / 2, height() - 80),
         anchor("center"),
-        area(), // Herní hitbox jako u hráčů
+        area(), 
         opacity(0), // Na začátku skryté
-        z(20),
-        "button"
+        z(20)
     ]);
     
     // Časovač na 5 sekund – poté zviditelníme tlačítko a povolíme restart
@@ -918,29 +917,45 @@ scene("ceremony", ({ s1, s2 }) => {
         btn.opacity = 1; 
     });
     
-    // Funkce pro znovuspuštění hry
+    // Společná funkce pro spuštění hry
     function begin() {
         if (!canRestart) return; 
-
         play("pickup", { volume: 0 }); 
         go("game");
     }
 
-    // DETEKCE DOTYKU: Přesně stejný princip jako u hráčů
-    // onTouchStart nám dává přesnou herní pozici (pos) prstu po přepočtu obrazovky
-    onTouchStart((id, pos) => {
-        // Pokud bod dotyku leží uvnitř herní oblasti (area) tlačítka, spusť hru
-        if (btn.hasPoint(pos)) {
+    // IDENTICKÁ FUNKCE PRO PŘEPOČET (zkopírováno z řádku 265-273)
+    function toCanvasPos(screenPos) {
+        const rect = document.getElementById("game").getBoundingClientRect();
+        const scaleX = width() / rect.width;
+        const scaleY = height() / rect.height;
+        return vec2(
+            (screenPos.x - rect.left) * scaleX,
+            (screenPos.y - rect.top) * scaleY
+        );
+    }
+
+    // IDENTICKÝ DOTYKOVÝ SYSTÉM JAKO U PANÁČKŮ (zkopírováno z řádku 275-291)
+    onTouchStart((pos, t) => {
+        const p = toCanvasPos(pos); // Přepočet pozice prstu
+        
+        const GRAB_RADIUS = 40; // Akční rádius dotyku (případně zvětšete podle velikosti obrázku)
+        const dist = p.dist(btn.pos); // Vzdálenost prstu od středu tlačítka
+
+        // Pokud prst zasáhl oblast tlačítka, odstartujeme hru
+        if (dist < GRAB_RADIUS) {
             begin();
         }
     });
 
-    // Pro funkčnost na PC při testování myší
-    onMousePress((pos) => {
-        if (btn.hasPoint(mousePos())) {
+    // Pro pohodlné testování na PC myší/klávesnicí
+    onClick(() => {
+        const p = toCanvasPos(mousePos());
+        if (p.dist(btn.pos) < 40) {
             begin();
         }
     });
+    onKeyPress(begin);
 
     // Funkce pro ohňostroj
     function spawnRandomFirework() {
@@ -951,7 +966,8 @@ scene("ceremony", ({ s1, s2 }) => {
         play("firework", { volume: 0.2 });
 
         wait(rand(0.5, 1.5), () => {
-            if (get("button").length > 0) {
+            // Ohňostroj běží dál, dokud jsme v této scéně
+            if (valid(btn)) { 
                 spawnRandomFirework();
             }
         });
