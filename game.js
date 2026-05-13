@@ -1,7 +1,7 @@
 kaboom({
     canvas: document.getElementById("game"),
-    width: 800,
-    height: 600,
+    width: 1920,
+    height: 1080,
     background: [0, 0, 0],
 });
 
