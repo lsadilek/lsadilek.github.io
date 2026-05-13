@@ -902,7 +902,7 @@ scene("ceremony", ({ s1, s2 }) => {
 
     // TLAČÍTKO JAKO OBRÁZEK (SPRITE)
     const btn = add([
-        sprite("klavesy"), // ZDE si změňte na název vašeho sprite tlačítka (např. "tlacitko_nova_hra")
+        sprite("tlacitko_nova_hra"), 
         pos(width() / 2, height() - 80),
         anchor("center"),
         area(), 
@@ -938,7 +938,7 @@ scene("ceremony", ({ s1, s2 }) => {
     onTouchStart((pos, t) => {
         const p = toCanvasPos(pos); // Přepočet pozice prstu
         
-        const GRAB_RADIUS = 40; // Akční rádius dotyku (případně zvětšete podle velikosti obrázku)
+        const GRAB_RADIUS = 200; // Akční rádius dotyku (případně zvětšete podle velikosti obrázku)
         const dist = p.dist(btn.pos); // Vzdálenost prstu od středu tlačítka
 
         // Pokud prst zasáhl oblast tlačítka, odstartujeme hru
