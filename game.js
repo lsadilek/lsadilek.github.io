@@ -854,7 +854,6 @@ scene("start", () => {
     });
    
 }); // Konec scény game
-
 // --- SCÉNA CEREMONY ---
 scene("ceremony", ({ s1, s2 }) => {
 
@@ -901,7 +900,7 @@ scene("ceremony", ({ s1, s2 }) => {
     // Proměnná, která určuje, zda už lze hru restartovat
     let canRestart = false;
 
-    // TLAČÍTKO JAKO OBRÁZEK (SPRITE) - přesně podle vašeho přání
+    // TLAČÍTKO JAKO OBRÁZEK (SPRITE)
     const btn = add([
         sprite("klavesy"), // ZDE si změňte na název vašeho sprite tlačítka (např. "tlacitko_nova_hra")
         pos(width() / 2, height() - 80),
@@ -924,7 +923,7 @@ scene("ceremony", ({ s1, s2 }) => {
         go("game");
     }
 
-    // IDENTICKÁ FUNKCE PRO PŘEPOČET (zkopírováno z řádku 265-273)
+    // IDENTICKÁ FUNKCE PRO PŘEPOČET 
     function toCanvasPos(screenPos) {
         const rect = document.getElementById("game").getBoundingClientRect();
         const scaleX = width() / rect.width;
@@ -935,7 +934,7 @@ scene("ceremony", ({ s1, s2 }) => {
         );
     }
 
-    // IDENTICKÝ DOTYKOVÝ SYSTÉM JAKO U PANÁČKŮ (zkopírováno z řádku 275-291)
+    // IDENTICKÝ DOTYKOVÝ SYSTÉM JAKO U PANÁČKŮ 
     onTouchStart((pos, t) => {
         const p = toCanvasPos(pos); // Přepočet pozice prstu
         
@@ -966,8 +965,8 @@ scene("ceremony", ({ s1, s2 }) => {
         play("firework", { volume: 0.2 });
 
         wait(rand(0.5, 1.5), () => {
-            // Ohňostroj běží dál, dokud jsme v této scéně
-            if (valid(btn)) { 
+            // OPRAVENO: Použití funkční metody .exists() z Kaboom.js
+            if (btn.exists()) { 
                 spawnRandomFirework();
             }
         });
