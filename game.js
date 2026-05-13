@@ -902,11 +902,11 @@ scene("ceremony", ({ s1, s2 }) => {
 
     // Tlačítko – na začátku skryté (opacity: 0)
     const btn = add([
-        rect(300, 60, { radius: 8 }),
         pos(width() / 2, height() - 80),
+        rect(300, 60, { radius: 8 }),
+        area(), // Kaboom automaticky vezme velikost z rect, pokud je area pod ním
         color(80, 80, 80),
-        area(),
-        opacity(0), // Skryto
+        opacity(0), 
         anchor("center"),
         z(20),
         "button"
@@ -955,12 +955,11 @@ scene("ceremony", ({ s1, s2 }) => {
 
     spawnRandomFirework();
     
-    // Ovládání reaguje okamžitě, ale funkce begin() ho propustí až po 5 sekundách
-    onMousePress(begin);
-    onKeyPress(begin);
-    onClick(begin); 
-    onTouchStart(begin);
-});
+    // Reakce na kliknutí myší nebo dotyk prstu přímo na tlačítko
+    btn.onClick(() => {
+        begin();
+    });
+});  // konec ceremony
 
 
 // Spuštění hry
