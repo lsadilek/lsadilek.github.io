@@ -262,40 +262,17 @@ scene("start", () => {
       let lastTouchP1 = null;
       let lastTouchP2 = null;
 
+
       function toCanvasPos(screenPos) {
-          // BEZPEČNOSTNÍ KONTROLA: Pokud Kaboom předá prázdnou pozici, vrátíme nulový vektor
-          if (!screenPos) return vec2(0, 0);
-
-          const canvas = document.getElementById("game");
-          const rect = canvas.getBoundingClientRect();
-          
-          // Výpočet černých okrajů (letterboxu) z CSS object-fit: contain
-          const gameRatio = 800 / 600;
-          let actualWidth = rect.width;
-          let actualHeight = rect.height;
-          let offsetX = 0;
-          let offsetY = 0;
-
-          if (rect.width / rect.height > gameRatio) {
-              actualWidth = rect.height * gameRatio;
-              offsetX = (rect.width - actualWidth) / 2;
-          } else {
-              actualHeight = rect.width / gameRatio;
-              offsetY = (rect.height - actualHeight) / 2;
-          }
-
-          const scaleX = 800 / actualWidth;
-          const scaleY = 600 / actualHeight;
-
-          // KLÍČOVÁ OPRAVA PRO MULTITOUCH: Spolehlivě vytáhneme X a Y z jakéhokoliv typu doteku
-          const clientX = screenPos.x !== undefined ? screenPos.x : (screenPos.clientX || 0);
-          const clientY = screenPos.y !== undefined ? screenPos.y : (screenPos.clientY || 0);
-
+          const rect = document.getElementById("game").getBoundingClientRect();
+          const scaleX = width() / rect.width;
+          const scaleY = height() / rect.height;
           return vec2(
-              (clientX - rect.left - offsetX) * scaleX,
-              (clientY - rect.top - offsetY) * scaleY
+              (screenPos.x - rect.left) * scaleX,
+              (screenPos.y - rect.top) * scaleY
           );
-      } 
+      }
+
       onTouchStart((pos, t) => {
           const p = toCanvasPos(pos);
           touchesNow[t.identifier] = p;
@@ -948,40 +925,15 @@ scene("ceremony", ({ s1, s2 }) => {
 
     // IDENTICKÁ FUNKCE PRO PŘEPOČET 
     function toCanvasPos(screenPos) {
-        // BEZPEČNOSTNÍ KONTROLA: Pokud Kaboom předá prázdnou pozici, vrátíme nulový vektor
-        if (!screenPos) return vec2(0, 0);
-
-        const canvas = document.getElementById("game");
-        const rect = canvas.getBoundingClientRect();
-        
-        // Výpočet černých okrajů (letterboxu) z CSS object-fit: contain
-        const gameRatio = 800 / 600;
-        let actualWidth = rect.width;
-        let actualHeight = rect.height;
-        let offsetX = 0;
-        let offsetY = 0;
-
-        if (rect.width / rect.height > gameRatio) {
-            actualWidth = rect.height * gameRatio;
-            offsetX = (rect.width - actualWidth) / 2;
-        } else {
-            actualHeight = rect.width / gameRatio;
-            offsetY = (rect.height - actualHeight) / 2;
-        }
-
-        const scaleX = 800 / actualWidth;
-        const scaleY = 600 / actualHeight;
-
-        // KLÍČOVÁ OPRAVA PRO MULTITOUCH: Spolehlivě vytáhneme X a Y z jakéhokoliv typu doteku
-        const clientX = screenPos.x !== undefined ? screenPos.x : (screenPos.clientX || 0);
-        const clientY = screenPos.y !== undefined ? screenPos.y : (screenPos.clientY || 0);
-
+        const rect = document.getElementById("game").getBoundingClientRect();
+        const scaleX = width() / rect.width;
+        const scaleY = height() / rect.height;
         return vec2(
-            (clientX - rect.left - offsetX) * scaleX,
-            (clientY - rect.top - offsetY) * scaleY
+            (screenPos.x - rect.left) * scaleX,
+            (screenPos.y - rect.top) * scaleY
         );
     }
-   
+
     // IDENTICKÝ DOTYKOVÝ SYSTÉM JAKO U PANÁČKŮ 
     onTouchStart((pos, t) => {
         const p = toCanvasPos(pos); // Přepočet pozice prstu
