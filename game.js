@@ -3,22 +3,7 @@ kaboom({
     width: 800,
     height: 600,
     background: [0, 0, 0],
-    letterbox: true, // Zachová poměr stran 4:3 a přidá černé okraje
 });
-
-// Fix pro mizející adresní řádek v mobilních prohlížečích (DuckDuckGo, Firefox)
-function fixMobileViewport() {
-    window.scrollTo(0, 0);
-    const canvas = document.getElementById("game");
-    if (canvas) {
-        canvas.style.height = window.innerHeight + "px";
-    }
-}
-
-// Spustit při načtení a při každé změně velikosti/otočení
-window.addEventListener("resize", fixMobileViewport);
-window.addEventListener("orientationchange", fixMobileViewport);
-fixMobileViewport();
 
 let touchMoveDir = { p1: vec2(0,0), p2: vec2(0,0) };
 
