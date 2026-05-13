@@ -23,13 +23,14 @@
             font-family: sans-serif;
         }
 
-        /* Kontejner již nemá dynamické vh/vw, rozměry mu natvrdo vnutí skript v px */
+        /* Fixní kontejner – skript mu natvrdo vnutí rozměr v px */
         .game-container {
             display: flex;
             justify-content: center;
             align-items: center;
             touch-action: none;
             box-sizing: border-box;
+            overflow: hidden;
         }
 
         /* Canvas drží striktní poměr 4:3 a vyplní zafixovaný kontejner */
@@ -92,29 +93,30 @@
     <script src="game.js" defer></script>
 
     <script>
-        // FUNKCE PRO ZAMČENÍ ROZMĚRŮ (ZABRÁNÍ PULZOVÁNÍ)
         function lockGameSize() {
             const container = document.getElementById('lock-container');
             if (!container) return;
 
-            // Zjistíme absolutní reálnou velikost okna v pixelech při spuštění/otočení
-            const startWidth = window.innerWidth;
-            const startHeight = window.innerHeight;
+            // Získáme rozměr čistého viditelného dokumentu bez skákajících lišt
+            const cleanWidth = document.documentElement.clientWidth;
+            const cleanHeight = document.documentElement.clientHeight;
 
-            // Vnutíme tyto pevné pixely kontejneru. 
-            // I když Duck schová lištu, kontejner zůstane absolutně nehybný.
-            container.style.width = startWidth + "px";
-            container.style.height = startHeight + "px";
+            // Zapíšeme natvrdo fixní pixely do HTML stylu prvku
+            container.style.width = cleanWidth + "px";
+            container.style.height = cleanHeight + "px";
         }
 
         window.addEventListener('DOMContentLoaded', () => {
-            // Zamkneme velikost hned při načtení
+            // Zamkneme plochu okamžitě při načtení webu
             lockGameSize();
 
-            // Pokud hráč otočí mobil, přepočítáme a znovu zamkneme pevné pixely
+            // Pokud se okno otočí nebo reálně změní, zafixujeme novou plochu
             window.addEventListener('resize', lockGameSize);
+            window.addEventListener('orientationchange', () => {
+                setTimeout(lockGameSize, 200); // Drobná pauza na překreslení systému
+            });
 
-            // Blokace posunu stránky na pozadí
+            // Blokace posunu na úrovni canvasu a těla dokumentu
             const canvas = document.getElementById('game');
             if (!canvas) return;
 
@@ -132,3 +134,4 @@
     </script>
 </body>
 </html>
+
