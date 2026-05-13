@@ -981,7 +981,7 @@ scene("ceremony", ({ s1, s2 }) => {
     window.addEventListener("touchstart", checkColorAndStart);
 
     // Vyčištění eventů při opuštění scény, aby nestrašily v samotné hře
-    onEnd(() => {
+    onSceneLeave(() => {
         window.removeEventListener("click", checkColorAndStart);
         window.removeEventListener("touchstart", checkColorAndStart);
     });
