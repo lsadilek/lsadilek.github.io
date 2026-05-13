@@ -262,17 +262,36 @@ scene("start", () => {
       let lastTouchP1 = null;
       let lastTouchP2 = null;
 
-
       function toCanvasPos(screenPos) {
-          const rect = document.getElementById("game").getBoundingClientRect();
-          const scaleX = width() / rect.width;
-          const scaleY = height() / rect.height;
+          const canvas = document.getElementById("game");
+          const rect = canvas.getBoundingClientRect();
+          
+          // Vypočítáme reálný poměr stran canvasu vzhledem k obrazovce
+          const gameRatio = 800 / 600;
+          let actualWidth = rect.width;
+          let actualHeight = rect.height;
+          let offsetX = 0;
+          let offsetY = 0;
+
+          // Pokud je okno širší než poměr 4:3, vznikly černé okraje po stranách
+          if (rect.width / rect.height > gameRatio) {
+              actualWidth = rect.height * gameRatio;
+              offsetX = (rect.width - actualWidth) / 2;
+          } else { 
+              // Jinak vznikly černé okraje nahoře a dole
+              actualHeight = rect.width / gameRatio;
+              offsetY = (rect.height - actualHeight) / 2;
+          }
+
+          // Přepočet souřadnic prstu se započítáním offsetů černých okrajů
+          const scaleX = 800 / actualWidth;
+          const scaleY = 600 / actualHeight;
+
           return vec2(
-              (screenPos.x - rect.left) * scaleX,
-              (screenPos.y - rect.top) * scaleY
+              (screenPos.x - rect.left - offsetX) * scaleX,
+              (screenPos.y - rect.top - offsetY) * scaleY
           );
       }
-
       onTouchStart((pos, t) => {
           const p = toCanvasPos(pos);
           touchesNow[t.identifier] = p;
@@ -925,15 +944,31 @@ scene("ceremony", ({ s1, s2 }) => {
 
     // IDENTICKÁ FUNKCE PRO PŘEPOČET 
     function toCanvasPos(screenPos) {
-        const rect = document.getElementById("game").getBoundingClientRect();
-        const scaleX = width() / rect.width;
-        const scaleY = height() / rect.height;
+        const canvas = document.getElementById("game");
+        const rect = canvas.getBoundingClientRect();
+        const gameRatio = 800 / 600;
+        let actualWidth = rect.width;
+        let actualHeight = rect.height;
+        let offsetX = 0;
+        let offsetY = 0;
+
+        if (rect.width / rect.height > gameRatio) {
+            actualWidth = rect.height * gameRatio;
+            offsetX = (rect.width - actualWidth) / 2;
+        } else {
+            actualHeight = rect.width / gameRatio;
+            offsetY = (rect.height - actualHeight) / 2;
+        }
+
+        const scaleX = 800 / actualWidth;
+        const scaleY = 600 / actualHeight;
+
         return vec2(
-            (screenPos.x - rect.left) * scaleX,
-            (screenPos.y - rect.top) * scaleY
+            (screenPos.x - rect.left - offsetX) * scaleX,
+            (screenPos.y - rect.top - offsetY) * scaleY
         );
     }
-
+ 
     // IDENTICKÝ DOTYKOVÝ SYSTÉM JAKO U PANÁČKŮ 
     onTouchStart((pos, t) => {
         const p = toCanvasPos(pos); // Přepočet pozice prstu
