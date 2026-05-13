@@ -1,7 +1,7 @@
 kaboom({
     canvas: document.getElementById("game"),
-    width: 1920,
-    height: 1080,
+    width: 800,
+    height: 600,
     background: [0, 0, 0],
 });
 
@@ -332,8 +332,8 @@ scene("start", () => {
       });
                                                 
            // Pozadí s náhodnou trávou
-          for (let y = 0; y < 34; y++) {
-              for (let x = 0; x < 60; x++) {
+          for (let y = 0; y < 19; y++) {
+              for (let x = 0; x < 25; x++) {
                   add([
                       sprite("trava", { frame: randi(0, 3) }), // Vybere náhodný obrázek trávy
                       pos(x * 32, y * 32),
