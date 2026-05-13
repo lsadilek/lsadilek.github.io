@@ -938,7 +938,7 @@ scene("ceremony", ({ s1, s2 }) => {
     onTouchStart((pos, t) => {
         const p = toCanvasPos(pos); // Přepočet pozice prstu
         
-        const GRAB_RADIUS = 200; // Akční rádius dotyku (případně zvětšete podle velikosti obrázku)
+        const GRAB_RADIUS = 100; // Akční rádius dotyku (případně zvětšete podle velikosti obrázku)
         const dist = p.dist(btn.pos); // Vzdálenost prstu od středu tlačítka
 
         // Pokud prst zasáhl oblast tlačítka, odstartujeme hru
