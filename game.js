@@ -901,37 +901,45 @@ scene("ceremony", ({ s1, s2 }) => {
     // Proměnná, která určuje, zda už lze hru restartovat
     let canRestart = false;
 
-    // TLAČÍTKO JAKO OBRÁZEK (SPRITE) 
-    // Kaboom pro sprite vygeneruje přesný hitbox, který funguje jako u hráčů
+    // Tlačítko jako OBRÁZEK (sprite) s aktivní herní oblastí area()
     const btn = add([
-        sprite("tlacitko_nova_hra"), // Použijeme nahraný obrázek
+        sprite("tlacitko_nova_hra"), // Obrázek tlačítka zavedený v loadSprite
         pos(width() / 2, height() - 80),
         anchor("center"),
-        area(), // Hitbox se automaticky přizpůsobí rozměrům obrázku
+        area(), // Herní hitbox jako u hráčů
         opacity(0), // Na začátku skryté
         z(20),
-        "button" // Tag pro detekci kliknutí
+        "button"
     ]);
     
     // Časovač na 5 sekund – poté zviditelníme tlačítko a povolíme restart
     wait(5, () => {
         canRestart = true;
-        btn.opacity = 1; // Zviditelní obrázek tlačítka
+        btn.opacity = 1; 
     });
     
-    // FUNKCE PRO START (Spustí se POUZE při kliknutí na hitbox obrázku)
-    // Funguje úplně stejně jako detekce dotyku u vašich hráčů
-    onClick("button", () => {
+    // Funkce pro znovuspuštění hry
+    function begin() {
         if (!canRestart) return; 
 
         play("pickup", { volume: 0 }); 
         go("game");
+    }
+
+    // DETEKCE DOTYKU: Přesně stejný princip jako u hráčů
+    // onTouchStart nám dává přesnou herní pozici (pos) prstu po přepočtu obrazovky
+    onTouchStart((id, pos) => {
+        // Pokud bod dotyku leží uvnitř herní oblasti (area) tlačítka, spusť hru
+        if (btn.hasPoint(pos)) {
+            begin();
+        }
     });
 
-    // Ponecháno pro pohodlné testování na PC mezerníkem
-    onKeyPress("space", () => {
-        if (!canRestart) return;
-        go("game");
+    // Pro funkčnost na PC při testování myší
+    onMousePress((pos) => {
+        if (btn.hasPoint(mousePos())) {
+            begin();
+        }
     });
 
     // Funkce pro ohňostroj
