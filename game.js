@@ -230,7 +230,7 @@ scene("start", () => {
         // 5. Další text pod obrázkem
         text("\nKlikni pro start", 
         { size: 24, font: "sans-serif" }),
-        pos(width() / 2, height() / 2 + 150),
+        pos(width() / 2, height() / 2 + 100),
         anchor("center")
     ]); 
     // Funkce pro spuštění hry
