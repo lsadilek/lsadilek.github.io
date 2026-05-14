@@ -222,7 +222,7 @@ scene("start", () => {
         // 4. Text pod obrázkem
         text("Seber co nejvíc hub. Pozor na jejich výbuch!",
         { size: 24, font: "sans-serif" }),
-        pos(width() / 2, height() / 2 + 100),
+        pos(width() / 2, height() / 2 + 200),
         anchor("center")
     ]);
        
@@ -230,7 +230,7 @@ scene("start", () => {
         // 5. Další text pod obrázkem
         text("\nKlikni pro start", 
         { size: 24, font: "sans-serif" }),
-        pos(width() / 2, height() / 2 + 200),
+        pos(width() / 2, height() / 2 + 250),
         anchor("center")
     ]); 
     // Funkce pro spuštění hry
@@ -926,7 +926,7 @@ scene("ceremony", ({ s1, s2 }) => {
             font: "sans-serif",
             align: "center"
         }),
-        pos(width() / 2, height() / 2 - 100),
+        pos(width() / 2, height() / 2 - 200),
         anchor("center"),
         z(20)
     ]);
@@ -937,7 +937,7 @@ scene("ceremony", ({ s1, s2 }) => {
     // TLAČÍTKO JAKO OBRÁZEK (SPRITE)
     const btn = add([
         sprite("tlacitko_nova_hra"), 
-        pos(width() / 2, height() - 400),
+        pos(width() / 2, height() - 100),
         anchor("center"),
         area(), 
         opacity(0), // Na začátku skryté
