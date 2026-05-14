@@ -214,7 +214,7 @@ scene("start", () => {
         // 3. Text pod obrázkem
         text("Na dotykové obrazovce dej prst na hráče",
         { size: 24, font: "sans-serif" }),
-        pos(width() / 2, height() / 2 + 150),
+        pos(width() / 2, height() / 2 + 100),
         anchor("center")
     ]);
     
@@ -222,7 +222,7 @@ scene("start", () => {
         // 4. Text pod obrázkem
         text("Seber co nejvíc hub. Pozor na jejich výbuch!",
         { size: 24, font: "sans-serif" }),
-        pos(width() / 2, height() / 2 + 200),
+        pos(width() / 2, height() / 2 + 150),
         anchor("center")
     ]);
        
@@ -230,7 +230,7 @@ scene("start", () => {
         // 5. Další text pod obrázkem
         text("\nKlikni pro start", 
         { size: 24, font: "sans-serif" }),
-        pos(width() / 2, height() / 2 + 250),
+        pos(width() / 2, height() / 2 + 200),
         anchor("center")
     ]); 
     // Funkce pro spuštění hry
