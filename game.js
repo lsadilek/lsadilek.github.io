@@ -1,7 +1,7 @@
 kaboom({
     canvas: document.getElementById("game"),
-    width: 1600,
-    height: 300,
+    width: 1000,
+    height: 500,
     background: [0, 0, 0],
 });
 
@@ -214,7 +214,7 @@ scene("start", () => {
         // 3. Text pod obrázkem
         text("Na dotykové obrazovce dej prst na hráče",
         { size: 24, font: "sans-serif" }),
-        pos(width() / 2, height() / 2 + 0),
+        pos(width() / 2, height() / 2 + 75),
         anchor("center")
     ]);
     
@@ -222,7 +222,7 @@ scene("start", () => {
         // 4. Text pod obrázkem
         text("Seber co nejvíc hub. Pozor na jejich výbuch!",
         { size: 24, font: "sans-serif" }),
-        pos(width() / 2, height() / 2 + 75),
+        pos(width() / 2, height() / 2 + 100),
         anchor("center")
     ]);
        
@@ -230,7 +230,7 @@ scene("start", () => {
         // 5. Další text pod obrázkem
         text("\nKlikni pro start", 
         { size: 24, font: "sans-serif" }),
-        pos(width() / 2, height() / 2 + 100),
+        pos(width() / 2, height() / 2 + 200),
         anchor("center")
     ]); 
     // Funkce pro spuštění hry
@@ -270,7 +270,7 @@ scene("start", () => {
           const rect = canvas.getBoundingClientRect();
           
           // Výpočet černých okrajů (letterboxu) z CSS object-fit: contain
-          const gameRatio = 1600 / 300;
+          const gameRatio = 1000 / 500;
           let actualWidth = rect.width;
           let actualHeight = rect.height;
           let offsetX = 0;
@@ -284,8 +284,8 @@ scene("start", () => {
               offsetY = (rect.height - actualHeight) / 2;
           }
 
-          const scaleX = 1600 / actualWidth;
-          const scaleY = 300 / actualHeight;
+          const scaleX = 1000 / actualWidth;
+          const scaleY = 500 / actualHeight;
 
           // KLÍČOVÁ OPRAVA PRO MULTITOUCH: Spolehlivě vytáhneme X a Y z jakéhokoliv typu doteku
           const clientX = screenPos.x !== undefined ? screenPos.x : (screenPos.clientX || 0);
@@ -343,8 +343,8 @@ scene("start", () => {
           }
                                                           
           // Pozadí s náhodnou trávou
-          for (let y = 0; y < 19; y++) {
-              for (let x = 0; x < 57; x++) {
+          for (let y = 0; y < 16; y++) {
+              for (let x = 0; x < 32; x++) {
                   add([
                       sprite("trava", { frame: randi(0, 3) }), // Vybere náhodný obrázek trávy
                       pos(x * 32, y * 32),
@@ -926,7 +926,7 @@ scene("ceremony", ({ s1, s2 }) => {
             font: "sans-serif",
             align: "center"
         }),
-        pos(width() / 2, height() / 2 - 10),
+        pos(width() / 2, height() / 2 - 100),
         anchor("center"),
         z(20)
     ]);
@@ -937,7 +937,7 @@ scene("ceremony", ({ s1, s2 }) => {
     // TLAČÍTKO JAKO OBRÁZEK (SPRITE)
     const btn = add([
         sprite("tlacitko_nova_hra"), 
-        pos(width() / 2, height() - 170),
+        pos(width() / 2, height() - 400),
         anchor("center"),
         area(), 
         opacity(0), // Na začátku skryté
@@ -966,7 +966,7 @@ scene("ceremony", ({ s1, s2 }) => {
         const rect = canvas.getBoundingClientRect();
         
         // Výpočet černých okrajů (letterboxu) z CSS object-fit: contain
-        const gameRatio = 1600 / 300;
+        const gameRatio = 1000 / 500;
         let actualWidth = rect.width;
         let actualHeight = rect.height;
         let offsetX = 0;
@@ -980,8 +980,8 @@ scene("ceremony", ({ s1, s2 }) => {
             offsetY = (rect.height - actualHeight) / 2;
         }
 
-        const scaleX = 1600 / actualWidth;
-        const scaleY = 300 / actualHeight;
+        const scaleX = 1000 / actualWidth;
+        const scaleY = 500 / actualHeight;
 
         // KLÍČOVÁ OPRAVA PRO MULTITOUCH: Spolehlivě vytáhneme X a Y z jakéhokoliv typu doteku
         const clientX = screenPos.x !== undefined ? screenPos.x : (screenPos.clientX || 0);
