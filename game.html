@@ -56,9 +56,9 @@
             padding: 20px;
             box-sizing: border-box;
         }
-
-        /* Zobrazení varování, pokud je displej užší než herní poměr 16:3 (1600x300) */
-        @media screen and (max-aspect-ratio: 16/3) {
+        
+        /* Varování se zobrazí POUZE v případě, že je telefon držen na výšku */
+        @media screen and (orientation: portrait) {
             #orientation-warning {
                 display: flex;
             }
