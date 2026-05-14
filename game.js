@@ -1,7 +1,7 @@
 kaboom({
     canvas: document.getElementById("game"),
-    width: 1800,
-    height: 270,
+    width: 1600,
+    height: 300,
     background: [0, 0, 0],
 });
 
@@ -270,7 +270,7 @@ scene("start", () => {
           const rect = canvas.getBoundingClientRect();
           
           // Výpočet černých okrajů (letterboxu) z CSS object-fit: contain
-          const gameRatio = 1800 / 270;
+          const gameRatio = 1600 / 300;
           let actualWidth = rect.width;
           let actualHeight = rect.height;
           let offsetX = 0;
@@ -284,8 +284,8 @@ scene("start", () => {
               offsetY = (rect.height - actualHeight) / 2;
           }
 
-          const scaleX = 1800 / actualWidth;
-          const scaleY = 270 / actualHeight;
+          const scaleX = 1600 / actualWidth;
+          const scaleY = 300 / actualHeight;
 
           // KLÍČOVÁ OPRAVA PRO MULTITOUCH: Spolehlivě vytáhneme X a Y z jakéhokoliv typu doteku
           const clientX = screenPos.x !== undefined ? screenPos.x : (screenPos.clientX || 0);
@@ -332,8 +332,8 @@ scene("start", () => {
       });
                                                 
            // Pozadí s náhodnou trávou
-          for (let y = 0; y < 6; y++) {
-              for (let x = 0; x < 25; x++) {
+          for (let y = 0; y < 10; y++) {
+              for (let x = 0; x < 50; x++) {
                   add([
                       sprite("trava", { frame: randi(0, 3) }), // Vybere náhodný obrázek trávy
                       pos(x * 32, y * 32),
@@ -966,7 +966,7 @@ scene("ceremony", ({ s1, s2 }) => {
         const rect = canvas.getBoundingClientRect();
         
         // Výpočet černých okrajů (letterboxu) z CSS object-fit: contain
-        const gameRatio = 1800 / 270;
+        const gameRatio = 1600 / 300;
         let actualWidth = rect.width;
         let actualHeight = rect.height;
         let offsetX = 0;
@@ -980,8 +980,8 @@ scene("ceremony", ({ s1, s2 }) => {
             offsetY = (rect.height - actualHeight) / 2;
         }
 
-        const scaleX = 1800 / actualWidth;
-        const scaleY = 270 / actualHeight;
+        const scaleX = 1600 / actualWidth;
+        const scaleY = 300 / actualHeight;
 
         // KLÍČOVÁ OPRAVA PRO MULTITOUCH: Spolehlivě vytáhneme X a Y z jakéhokoliv typu doteku
         const clientX = screenPos.x !== undefined ? screenPos.x : (screenPos.clientX || 0);
