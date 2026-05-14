@@ -214,7 +214,7 @@ scene("start", () => {
         // 3. Text pod obrázkem
         text("Na dotykové obrazovce dej prst na hráče",
         { size: 24, font: "sans-serif" }),
-        pos(width() / 2, height() / 2 + 75),
+        pos(width() / 2, height() / 2 + 150),
         anchor("center")
     ]);
     
@@ -926,7 +926,7 @@ scene("ceremony", ({ s1, s2 }) => {
             font: "sans-serif",
             align: "center"
         }),
-        pos(width() / 2, height() / 2 - 200),
+        pos(width() / 2, height() / 2 - 150),
         anchor("center"),
         z(20)
     ]);
