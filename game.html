@@ -23,14 +23,14 @@
             font-family: sans-serif;
         }
 
-        /* Canvas drží poměr 4:3 (800x600) a vyplní displej s černými okraji */
+        /* Canvas drží poměr 40:6 (1800x270) a vyplní displej s černými okraji */
         #game {
             width: 100vw;
             height: 100vh;
             max-width: 100%;
             max-height: 100%;
             object-fit: contain;
-            aspect-ratio: 4 / 3;
+            aspect-ratio: 40 / 6;
             display: block;
             touch-action: none;
             user-select: none;
@@ -58,7 +58,7 @@
         }
 
         /* Zobrazení varování, pokud je displej užší než herní poměr 4:3 (800x600) */
-        @media screen and (max-aspect-ratio: 4/3) {
+        @media screen and (max-aspect-ratio: 40/6) {
             #orientation-warning {
                 display: flex;
             }
@@ -75,7 +75,7 @@
         Pro hraní otočte prosím mobil naležato.
     </div>
 
-    <canvas id="game" width="800" height="600"></canvas>
+    <canvas id="game" width="1800" height="270"></canvas>
         
     <script src="https://unpkg.com/kaboom@3000.0.0/dist/kaboom.js" defer></script>
     <script src="game.js" defer></script>
