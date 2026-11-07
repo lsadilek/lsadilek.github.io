@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   viewBox="0 0 99.999983 99.999999"
+   width="100"
+   height="100"
+   version="1.1"
+   id="svg5"
+   sodipodi:docname="analytika.svg"
+   inkscape:export-filename="analyza.svg"
+   inkscape:export-xdpi="150"
+   inkscape:export-ydpi="150"
+   inkscape:version="1.4.2 (f4327f4, 2025-05-13)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs5" />
+  <sodipodi:namedview
+     id="namedview5"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="0.75"
+     inkscape:cx="63.333333"
+     inkscape:cy="44.666667"
+     inkscape:window-width="1920"
+     inkscape:window-height="1009"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg5">
+    <inkscape:page
+       x="0"
+       y="0"
+       width="99.999985"
+       height="100"
+       id="page2"
+       margin="0"
+       bleed="0" />
+  </sodipodi:namedview>
+  <!-- Kruhové pozadí -->
+  <!-- Jemná projektová mřížka na pozadí -->
+  <path
+     d="M 24.951583,37.725744 H 76.048207 M 24.951583,50.499897 H 76.048207 M 24.951583,63.274051 H 76.048207 M 37.725744,24.951583 V 76.048207 M 50.499897,24.951583 V 76.048207 M 63.274051,24.951583 v 51.096624"
+     fill="none"
+     stroke="#7fb8ee"
+     stroke-width="1.59659"
+     stroke-dasharray="2, 2"
+     opacity="0.6"
+     id="path1" />
+  <!-- ANALYTICKÝ GRAF KAPACIT -->
+  <g
+     id="graf-kapacit"
+     transform="matrix(1.5967688,0,0,1.5967688,-0.59673345,-0.59673345)">
+    <path
+       d="m 18,36 q 8,-14 16,-8 8,6 14,-10"
+       fill="none"
+       stroke="#7fb8ee"
+       stroke-width="2"
+       stroke-linecap="round"
+       id="path2" />
+    <circle
+       cx="34"
+       cy="28"
+       r="2"
+       fill="#7fb8ee"
+       id="circle2" />
+    <circle
+       cx="48"
+       cy="18"
+       r="2"
+       fill="#7fb8ee"
+       id="circle3" />
+  </g>
+  <!-- POSUZOVANÉ POTRUBÍ -->
+  <g
+     id="potrubi"
+     transform="matrix(1.5967688,0,0,1.5967688,-0.59673345,-0.59673345)">
+    <path
+       d="M 14,44 H 50"
+       fill="none"
+       stroke="#0d2c54"
+       stroke-width="3"
+       stroke-linecap="round"
+       id="path3" />
+    <!-- Měřidlo / Průtokoměr -->
+    <circle
+       cx="26"
+       cy="44"
+       r="5"
+       fill="#ffffff"
+       stroke="#0d2c54"
+       stroke-width="1.5"
+       id="circle4" />
+    <!-- Ručička měřidla -->
+    <line
+       x1="26"
+       y1="44"
+       x2="28"
+       y2="41"
+       stroke="#0d2c54"
+       stroke-width="1.5"
+       stroke-linecap="round"
+       id="line4" />
+  </g>
+  <!-- LUPA -->
+  <g
+     id="lupa"
+     transform="matrix(1.5967688,0,0,1.5967688,-0.59673345,-0.59673345)">
+    <!-- Rukojeť lupy -->
+    <line
+       x1="41"
+       y1="33"
+       x2="48"
+       y2="40"
+       stroke="#0d2c54"
+       stroke-width="3"
+       stroke-linecap="round"
+       id="line5" />
+    <!-- Rámeček čočky lupy -->
+    <circle
+       cx="37"
+       cy="29"
+       r="6"
+       fill="#ffffff"
+       fill-opacity="0.2"
+       stroke="#0d2c54"
+       stroke-width="2"
+       id="circle5" />
+    <!-- Odlesk na lupě -->
+    <path
+       d="m 34,27 c 1,-2 4,-2 5,-1"
+       fill="none"
+       stroke="#7fb8ee"
+       stroke-width="1"
+       stroke-linecap="round"
+       id="path5" />
+  </g>
+</svg>

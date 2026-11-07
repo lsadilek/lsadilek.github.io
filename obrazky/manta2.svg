@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 128 128" width="128" height="128">
+  <!-- Kruhové pozadí (identické s celou sadou) -->
+  <circle cx="64" cy="64" r="60" fill="#F4F5F7" stroke="#0D2C54" stroke-width="4" />
+  
+  <!-- Jemná projektová mřížka na pozadí -->
+  <path d="M32 48 H96 M32 64 H96 M32 80 H96 M48 32 V96 M64 32 V96 M80 32 V96" stroke="#7FB8EE" stroke-width="1.5" stroke-dasharray="4,4" opacity="0.6" />
+  
+  <!-- LOGO: MANTA PLUJÍCÍ PO DIAGONÁLE (Čistý pohled shora) -->
+  <!-- Otočení celé skupiny o 45 stupňů kolem středu [64, 64] pro směr zprava-nahoru doleva-dolů -->
+  <g id="manta-diagonal" transform="rotate(-45 64 64)">
+    
+    <!-- Dlouhý tenký ocas -->
+    <line x1="64" y1="74" x2="64" y2="106" stroke="#0D2C54" stroke-width="3" stroke-linecap="round" />
+    
+    <!-- Spodní bílý obrys (podklad pro kontrast křídel) -->
+    <path d="M64 30 C52 30 28 42 16 54 C32 56 50 64 64 76 C78 64 96 56 112 54 C100 42 76 30 64 30 Z" fill="#FFFFFF" stroke="#000000" stroke-width="1.5" stroke-linejoin="round" />
+    
+    <!-- Hlavní tmavě modré tělo a široká křídla -->
+    <path d="M64 33 
+             C55 33 32 44 19 53 
+             C32 54 50 62 64 73 
+             C78 62 96 54 109 53 
+             C96 44 73 33 64 33 Z" fill="#0D2C54" />
+             
+    <!-- Výrazné hlavové ploutve / Rohy manty -->
+    <path d="M57 32 C55 24 59 21 60 21 C61 21 61 26 60 32 Z" fill="#0D2C54" stroke="#0D2C54" stroke-width="1" />
+    <path d="M71 32 C73 24 69 21 68 21 C67 21 67 26 68 32 Z" fill="#0D2C54" stroke="#0D2C54" stroke-width="1" />
+    
+    <!-- Světle modrý hřbetní „inženýrský“ vzor -->
+    <path d="M64 42 C58 42 46 49 38 53 C46 53 56 57 64 64 C72 57 82 53 90 53 C82 49 70 42 64 42 Z" fill="#7FB8EE" opacity="0.9" />
+  </g>
+</svg>
+

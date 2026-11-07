@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   viewBox="0 0 100 100"
+   width="100"
+   height="100"
+   version="1.1"
+   id="svg5"
+   sodipodi:docname="ludvik.svg"
+   inkscape:version="1.4.2 (f4327f4, 2025-05-13)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs5" />
+  <sodipodi:namedview
+     id="namedview5"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="12.609375"
+     inkscape:cx="32"
+     inkscape:cy="-34.855019"
+     inkscape:window-width="1920"
+     inkscape:window-height="1009"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg5" />
+  <!-- Kruhové pozadí (identické s celou sadou) -->
+  <!-- Jemná projektová mřížka na pozadí (identická) -->
+  <path
+     d="M 24.951613,37.725806 H 76.048387 M 24.951613,50.5 H 76.048387 M 24.951613,63.274194 H 76.048387 M 37.725806,24.951613 V 76.048387 M 50.5,24.951613 V 76.048387 M 63.274194,24.951613 v 51.096774"
+     stroke="#7fb8ee"
+     stroke-width="1.59677"
+     stroke-dasharray="2, 2"
+     opacity="0.6"
+     id="path1" />
+  <!-- SILUETA ZAKLADATELE / PORADCE -->
+  <!-- Ramena a oblek zakladatele -->
+  <path
+     d="m 28.145161,82.435484 c 0,-12.774194 9.580645,-17.564516 22.354839,-17.564516 12.774194,0 22.354839,4.790322 22.354839,17.564516"
+     fill="#0d2c54"
+     stroke="#000000"
+     stroke-width="2.39516"
+     stroke-linejoin="round"
+     id="path2" />
+  <!-- Límeček / Kravata (symbol seniorního poradce) -->
+  <polygon
+     points="29,41 35,41 32,46 "
+     fill="#ffffff"
+     id="polygon2"
+     transform="matrix(1.5967742,0,0,1.5967742,-0.59677419,-0.59677419)" />
+  <line
+     x1="50.5"
+     y1="69.661293"
+     x2="50.5"
+     y2="77.645164"
+     stroke="#7fb8ee"
+     stroke-width="2.39516"
+     id="line2" />
+  <!-- Hlava a krk -->
+  <rect
+     x="45.709679"
+     y="52.096775"
+     width="9.5806456"
+     height="14.370968"
+     fill="#d1d5db"
+     id="rect2"
+     style="stroke-width:1.59677" />
+  <circle
+     cx="50.5"
+     cy="45.709679"
+     r="10.379032"
+     fill="#ffffff"
+     stroke="#000000"
+     stroke-width="2.39516"
+     id="circle2" />
+  <!-- SYMBOL INOVACE A MOZKU (Žárovka s vodní kapkou) -->
+  <!-- Skleněná baňka žárovky (vpravo nahoře pro dynamiku) -->
+  <path
+     d="m 72.854839,29.741935 c 0,-5.588709 -4.790323,-9.580645 -10.379033,-9.580645 -5.588709,0 -10.379032,3.991936 -10.379032,9.580645 0,3.991936 2.395161,6.387097 3.991936,8.782259 l 1.596774,3.991935 h 9.580645 l 1.596774,-3.991935 c 1.596774,-2.395162 3.991936,-4.790323 3.991936,-8.782259 z"
+     fill="#7fb8ee"
+     stroke="#0d2c54"
+     stroke-width="2.39516"
+     stroke-linejoin="round"
+     opacity="0.9"
+     id="path3" />
+  <!-- Patice žárovky (závit) -->
+  <rect
+     x="59.282257"
+     y="42.516129"
+     width="6.3870969"
+     height="3.1935484"
+     fill="#0d2c54"
+     id="rect3"
+     style="stroke-width:1.59677" />
+  <rect
+     x="60.879032"
+     y="45.709679"
+     width="3.1935484"
+     height="2.3951614"
+     fill="#d1d5db"
+     id="rect4"
+     style="stroke-width:1.59677" />
+  <!-- Vodní kapka jako vlákno uvnitř žárovky (vize vodních staveb) -->
+  <path
+     d="m 62.475806,24.951613 c 0,0 3.193549,3.991935 3.193549,5.58871 0,1.756451 -1.437097,3.193548 -3.193549,3.193548 -1.756451,0 -3.193548,-1.437097 -3.193548,-3.193548 0,-1.596775 3.193548,-5.58871 3.193548,-5.58871 z"
+     fill="#ffffff"
+     id="path4"
+     style="stroke-width:1.59677" />
+  <!-- Paprsky světla / nápadu -->
+  <path
+     d="m 47.306452,21.758065 -3.193549,-3.193549 m 4.790323,11.177419 h -3.193549 m 31.935484,-7.98387 3.193549,-3.193549 M 79.241935,29.741935 H 76.048387 M 62.475806,15.370968 v -3.193549"
+     stroke="#0d2c54"
+     stroke-width="1.59677"
+     stroke-linecap="round"
+     id="path5" />
+</svg>
